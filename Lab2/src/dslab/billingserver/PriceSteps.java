@@ -45,7 +45,7 @@ public class PriceSteps implements Serializable{
     
     public void createPriceStep(double startPrice, double endPrice, double fixedPrice, double variablePricePercent) throws InvalidArgumentsException{
 
-	if(startPrice < 0 || endPrice<0 || fixedPrice<0 || variablePricePercent<0){
+	if(startPrice < 0 || endPrice<0 || fixedPrice<0 || variablePricePercent<0 || startPrice>endPrice){
 	//check for negative arguments
 	    throw new InvalidArgumentsException("negative arguments are not allowed here");
 	}
@@ -93,16 +93,44 @@ public class PriceSteps implements Serializable{
 	       }
            }
         }
+	
+	
+	//no existing pricestep has a lower startprice than the new one's endPrice
+	//try to make the new one the last pricestep
+	
+	double[] last = steps.get(steps.size()-1);
+	
+	if(last[1]<startPrice){
+	    steps.add(step);
+	} else{
+	    throw new InvalidArgumentsException("interval overlaps with the last interval");
+	}
+	
+	
     }
     
     
     public double getFixed(double price){
     //TODO do some calculations
+	double[] current;
+	for(int i=0; i<this.steps.size(); ++i){
+           current = steps.get(i);
+           if(price>=current[0] && price<=current[1]){
+	       return current[2];
+	   }
+        }
         return 0;
     }
     
     public double getVariable(double price){
     //TODO do some calculations
+        double[] current;
+	for(int i=0; i<this.steps.size(); ++i){
+           current = steps.get(i);
+           if(price>=current[0] && price<=current[1]){
+	       return current[3]*price;
+	   }
+        }
         return 0;
     }
     
