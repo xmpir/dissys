@@ -5,6 +5,8 @@ import java.net.InetAddress;
 import java.util.Date;
 
 public class Protocol {
+    
+    
 	private User currentUser;
 	private Lists lists;
 
@@ -18,7 +20,7 @@ public class Protocol {
 			String[] input = inputWhole.split(" ");
 			if (input.length > 0){
 				if (input[0].equals("!login")){
-					if (input.length == 3){
+					if (input.length == 2){
 						if (currentUser == null){
 							currentUser = new User(input[1]);
 							int index = lists.getUserIndex(currentUser);
@@ -33,13 +35,7 @@ public class Protocol {
 								}
 							}
 							currentUser.setActive(true);
-							try{
-								int udpPort = Integer.parseInt(input[2]);
-								currentUser.setUdpPort(udpPort);
-							}
-							catch (NumberFormatException e) {
-								return "udpPort must be an integer! Please restart program with valid udpPort!";
-							}
+							
 							currentUser.setAddress(address);
 							currentUser.getMessages();
 							return "!login " + currentUser.getUsername() + System.getProperty("line.separator") + "Successfully logged in as " + currentUser.getUsername() + "!";

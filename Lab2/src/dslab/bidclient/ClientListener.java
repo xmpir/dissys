@@ -5,20 +5,17 @@ import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 
 public class ClientListener extends Thread{
-	private DatagramSocket datagramSocket;
 	private ClientUser user;
 
-	ClientListener(DatagramSocket datagramSocket, ClientUser user){
-		this.datagramSocket = datagramSocket;
+	ClientListener(ClientUser user){
 		this.user = user;
 	}
 
 	public void run(){
 		byte[] buf = new byte[256];
 		DatagramPacket packet = new DatagramPacket(buf, buf.length);
-		try{
+		
 			while (true){
-				datagramSocket.receive(packet);
 				String received = new String(packet.getData(), 0, packet.getLength());
 				if (received.substring(0, 8).equals("!new-bid")){
 					System.out.println("You have been overbid on '" + received.substring(9) + "'");
@@ -48,9 +45,7 @@ public class ClientListener extends Thread{
 					System.out.println(out);
 				}
 			}
-		}
-		catch (IOException e){
-			System.out.println("Datagram closed.");
-		}
+		
+		
 	}
 }

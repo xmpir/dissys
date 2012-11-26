@@ -61,22 +61,27 @@ public class Lists {
 			Date now = new Date();
 			if (a.isIncluded() && now.after(a.getEnd())){
 				a.setIncluded(false);
-				String message = "!auction-ended " + a.getHighestBidder()  + " " + a.getHighestBid() + " " + a.getDescription();
+				/*String message = "!auction-ended " + a.getHighestBidder()  + " " + a.getHighestBid() + " " + a.getDescription();
 				if (a.getCreator().isActive()){
 					ServerNotifier creator = new ServerNotifier(a.getCreator().getAddress(), a.getCreator().getUdpPort());
 					creator.send(message);
 				}
 				else {
 					a.getCreator().addMessage(message);
-				}
+				}*/
 				if (a.isBid()){
+				    
+				    //TODO here the billingserver comes in
+				    
+				    
+				    /*
 					if (a.getHighestBidder().isActive()){
 						ServerNotifier highestBidder = new ServerNotifier(a.getHighestBidder().getAddress(), a.getHighestBidder().getUdpPort());
 						highestBidder.send(message);
 					}
 					else {
 						a.getHighestBidder().addMessage(message);
-					}
+					}*/
 				}
 			}
 		}

@@ -47,6 +47,7 @@ public class BillingServer implements BillingServerInterface{
 	}
 	} else {
 	System.err.println("Properties file not found!");
+	return;
 	}
 	//the following code is more or less taken from:
 	//http://docs.oracle.com/javase/tutorial/rmi/implementing.html

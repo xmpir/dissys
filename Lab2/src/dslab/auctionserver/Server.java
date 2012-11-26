@@ -7,6 +7,8 @@ import java.net.ServerSocket;
 import static java.util.concurrent.TimeUnit.MILLISECONDS;
 
 public class Server {
+    
+    
 	public static void main(String[] args) {
 		int tcpPort = 0;
 		Lists lists = new Lists();
