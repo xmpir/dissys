@@ -6,7 +6,10 @@
 package dslab.billingserver;
 
 import java.io.IOException;
+import java.io.Serializable;
 import java.math.BigInteger;
+import java.rmi.AccessException;
+import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
@@ -20,20 +23,14 @@ import java.util.logging.Logger;
  *
  * @author Robert Rainer
  */
-public class BillingServer implements BillingServerInterface{
+public class BillingServer implements BillingServerInterface, Serializable{
 
     private static MessageDigest md;
+    private static String registryHost;
+    private static String registryPort;
+    private Registry registry;
     
-    public static void main(String[] args) throws IOException {
-	try {
-	    md = MessageDigest.getInstance("MD5");
-	} catch (NoSuchAlgorithmException ex) {
-	    System.out.println
-		   ("md5 algorithm could not be found");
-	}
-	
-	String registryPort="";
-	String registryHost="";
+    public void setMyProperties() throws IOException{
 	java.io.InputStream is = ClassLoader.getSystemResourceAsStream("registry.properties");
 	if (is != null) {
 	java.util.Properties props = new java.util.Properties();
@@ -46,19 +43,38 @@ public class BillingServer implements BillingServerInterface{
 	is.close();
 	}
 	} else {
-	System.err.println("Properties file not found!");
+	System.out.println("Properties file not found!");
 	}
+    }
+    
+    
+    public void start(String[] args) throws IOException {
+	
+	if(args.length!=1){
+	    System.out.println("only one argument is allowed");
+	    return;
+	}
+	
+	try {
+	    md = MessageDigest.getInstance("MD5");
+	} catch (NoSuchAlgorithmException ex) {
+	    System.out.println
+		   ("md5 algorithm could not be found");
+	}
+	
+	
+	this.setMyProperties();
+	
 	//the following code is more or less taken from:
 	//http://docs.oracle.com/javase/tutorial/rmi/implementing.html
 	//TODO look for the registry that may have been created by the analysis server
 	try {
-            String name = "BillingServer";
             BillingServerInterface billingServer = new BillingServer();
             BillingServerInterface stub =
                 (BillingServerInterface) UnicastRemoteObject.exportObject(billingServer, 0);
-            Registry registry;
+            
 	    registry = LocateRegistry.createRegistry(Integer.parseInt(registryPort));
-            registry.rebind(name, stub);
+            registry.rebind(args[0], stub);
             System.out.println("BillingServer bound");
         } catch (Exception e) {
             System.err.println("BillingServer exception:");
@@ -69,6 +85,8 @@ public class BillingServer implements BillingServerInterface{
     @Override
     public BillingServerSecureInterface login(String name, String password) throws RemoteException{
         
+	System.out.println(name +" is trying to login");
+	
 	String md5password=null;
 	
 	java.io.InputStream is = ClassLoader.getSystemResourceAsStream("user.properties");
@@ -115,6 +133,10 @@ public class BillingServer implements BillingServerInterface{
 	      hashtext = "0"+hashtext;
 	    }
 	    return hashtext;
+    }
+    
+    public void shutdown() throws RemoteException, AccessException, NotBoundException{
+	registry.unbind(registryHost);
     }
     
 }

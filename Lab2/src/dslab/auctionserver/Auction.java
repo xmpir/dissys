@@ -11,7 +11,7 @@ public class Auction{
 	private int id;
 	private User creator;
 	private User highestBidder;
-	private BigDecimal highestBid;
+	private double highestBid;
 	private boolean included = true;
 	private User temp;
 	private boolean bid = false;
@@ -23,7 +23,7 @@ public class Auction{
 
 		this.creator = creator;
 		highestBidder = new User("none");
-		highestBid = new BigDecimal(0.00);
+		highestBid = 0.0;
 	}
 
 	Auction(int id){
@@ -38,34 +38,34 @@ public class Auction{
 		this.highestBidder = highestBidder;
 	}
 
-	public synchronized BigDecimal getHighestBid() {
+	public synchronized double getHighestBid() {
 		return highestBid;
 	}
 
-	public synchronized void setHighestBid(BigDecimal highestBid) {
+	public synchronized void setHighestBid(double highestBid) {
 		this.highestBid = highestBid;
 	}
 
-	public synchronized String bid(User user, BigDecimal amount){
+	public synchronized String bid(User user, double amount){
 		Date now = new Date();
 		if (now.after(end)){
 			return "You can't bid any more!";
 		}
-		if (amount.compareTo(highestBid) > 0){
+		if (amount>highestBid){
 			temp = highestBidder;
 			highestBidder = user;
 			highestBid = amount;
+			/* UDP:
 			if (bid){
-				String message = "!new-bid " + getDescription();
-				if (temp.isActive()){
-					ServerNotifier sn = new ServerNotifier(temp.getAddress(), temp.getUdpPort());
-					sn.send(message);
-				}
-				else {
-					temp.addMessage(message);
-				}
-
-			}
+			    String message = "!new-bid " + getDescription();
+			    if (temp.isActive()){
+				    ServerNotifier sn = new ServerNotifier(temp.getAddress(), temp.getUdpPort());
+				    sn.send(message);
+			    }
+			    else {
+				    temp.addMessage(message);
+			    }
+			}*/
 			bid = true;
 			return "true";
 		}

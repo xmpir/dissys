@@ -10,7 +10,7 @@ public class Client {
 		BufferedReader in = null;
 		String host;
 		int tcpPort;
-		int udpPort;
+		//int udpPort;
 		ClientUser user = new ClientUser();
 
 		if (args.length == 3){
@@ -18,7 +18,7 @@ public class Client {
 			try {
 				tcpPort = Integer.parseInt(args[1]);
 				try {
-					udpPort = Integer.parseInt(args[2]);
+					//udpPort = Integer.parseInt(args[2]);
 					socket = new Socket(host, tcpPort);
 					out = new PrintWriter(socket.getOutputStream(), true);
 					in = new BufferedReader(new InputStreamReader(
@@ -26,14 +26,14 @@ public class Client {
 					BufferedReader stdIn = new BufferedReader(
 							new InputStreamReader(System.in));
 					String fromUser;
-					DatagramSocket datagramSocket = new DatagramSocket(udpPort);
-					ClientListener c = new ClientListener(datagramSocket, user);
-					c.start();
+					//DatagramSocket datagramSocket = new DatagramSocket(udpPort);
+					//ClientListener c = new ClientListener(user);
+					//c.start();
 					ClientResponseHandler crh = new ClientResponseHandler(in, host, user);
 
 					while ((fromUser = stdIn.readLine()) != null) {
 						if (fromUser.length() > 7 && fromUser.substring(0, 6).equals("!login")){
-							fromUser = fromUser + " " + udpPort;
+							fromUser = fromUser;
 						}
 						out.println(fromUser);
 						crh.start();
@@ -45,7 +45,7 @@ public class Client {
 					in.close();
 					stdIn.close();
 					socket.close();
-					datagramSocket.close();
+					//datagramSocket.close();
 				} catch (NumberFormatException e) {
 					System.out.println("udpPort must be an integer!");
 				}
