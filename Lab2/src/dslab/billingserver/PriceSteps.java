@@ -158,6 +158,10 @@ public class PriceSteps implements Serializable{
         }
         return answer;
     }
+
+    void deletePriceStep() {
+	throw new UnsupportedOperationException("Not yet implemented");
+    }
     
     
 }

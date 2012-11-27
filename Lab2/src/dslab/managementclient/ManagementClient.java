@@ -35,7 +35,7 @@ public class ManagementClient {
 				}
 				//Data.getInstance().initUsers();
 				try {
-					String name = "BillingServer";
+					String name = "BillingServerRef";
 					Registry registry = LocateRegistry.getRegistry(registryHost, port);
 					BillingServerInterface billingServer = (BillingServerInterface) registry.lookup(name);
 					BillingServerSecureInterface secure = null;

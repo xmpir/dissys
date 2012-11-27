@@ -9,6 +9,7 @@ import java.io.IOException;
 import java.io.Serializable;
 import java.math.BigInteger;
 import java.rmi.AccessException;
+import java.rmi.NoSuchObjectException;
 import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
@@ -28,6 +29,8 @@ public class BillingServer implements BillingServerInterface, Serializable{
     private static MessageDigest md;
     private static String registryHost;
     private static String registryPort;
+    private static String billingServerName;
+    private BillingServerSecureInterface stub;
     private Registry registry;
     
     public void setMyProperties() throws IOException{
@@ -55,6 +58,8 @@ public class BillingServer implements BillingServerInterface, Serializable{
 	    return;
 	}
 	
+	billingServerName = args[0];
+	
 	try {
 	    md = MessageDigest.getInstance("MD5");
 	} catch (NoSuchAlgorithmException ex) {
@@ -67,19 +72,18 @@ public class BillingServer implements BillingServerInterface, Serializable{
 	
 	//the following code is more or less taken from:
 	//http://docs.oracle.com/javase/tutorial/rmi/implementing.html
-	//TODO look for the registry that may have been created by the analysis server
-	try {
-            BillingServerInterface billingServer = new BillingServer();
-            BillingServerInterface stub =
-                (BillingServerInterface) UnicastRemoteObject.exportObject(billingServer, 0);
-            
-	    registry = LocateRegistry.createRegistry(Integer.parseInt(registryPort));
-            registry.rebind(args[0], stub);
-            System.out.println("BillingServer bound");
-        } catch (Exception e) {
-            System.err.println("BillingServer exception:");
-            e.printStackTrace();
-        }
+	   try{
+               registry = LocateRegistry.getRegistry(Integer.parseInt(registryPort));
+               registry = LocateRegistry.createRegistry(Integer.parseInt(registryPort));
+           }
+           catch (RemoteException e) {
+               //do nothing, error means registry already exists
+               System.out.println("java RMI registry already exists.");
+           } 
+	   BillingServerInterface billingServer = new BillingServer();
+           BillingServerInterface stub = (BillingServerInterface) UnicastRemoteObject.exportObject(billingServer, 0);
+           registry.rebind(args[0], stub);
+           System.out.println("BillingServer bound");
     }
     
     @Override
@@ -88,7 +92,6 @@ public class BillingServer implements BillingServerInterface, Serializable{
 	System.out.println(name +" is trying to login");
 	
 	String md5password=null;
-	
 	java.io.InputStream is = ClassLoader.getSystemResourceAsStream("user.properties");
 	if (is != null) {
 	java.util.Properties props = new java.util.Properties();
@@ -96,32 +99,37 @@ public class BillingServer implements BillingServerInterface, Serializable{
 		try {
 		    props.load(is);
 		} catch (IOException ex) {
-		    Logger.getLogger(BillingServer.class.getName()).log(Level.SEVERE, null, ex);
+		    System.out.println("IOException while reading properties");
+		    throw new RemoteException("problems with the credentials");
 		}
 	md5password = props.getProperty(name);
 	} finally {
 		try {
 		    is.close();
 		} catch (IOException ex) {
-		    Logger.getLogger(BillingServer.class.getName()).log(Level.SEVERE, null, ex);
+		    //should not happen
+		    System.out.println("Properties-stream could not be closed");
 		}
 	}
 	} else {
-	System.err.println("User file not found!");
+	System.out.println("User.properties file not found!");
 	throw new RemoteException("the Userdata of the billing-client seems not to be there...");
 	}
-	
 	if(md5password != null){
 	    if(this.getMd5(password).equals(md5password)){
-		BillingServerSecureInterface clientInstance = new BillingServerSecure();
-		return clientInstance;
+		BillingServerSecure clientInstance = new BillingServerSecure();
+		
+		stub = (BillingServerSecureInterface) UnicastRemoteObject.exportObject(clientInstance, 0);
+		
+		System.out.println(name +" successfully logged in");
+		return stub;
 	    }
 	}
 	
-	throw new InvalidArgumentsException("unknown credentials");
+	throw new RemoteException("bad credentials");
     }
 
-    
+    //a little helper for doing the md5-hashing
     private String getMd5(String input){
 	    md.reset();
 	    md.update(input.getBytes());
@@ -135,8 +143,21 @@ public class BillingServer implements BillingServerInterface, Serializable{
 	    return hashtext;
     }
     
-    public void shutdown() throws RemoteException, AccessException, NotBoundException{
-	registry.unbind(registryHost);
+    public void shutdown(){
+		
+	try {
+            registry.unbind(billingServerName);
+        } catch (RemoteException re) {
+            System.out.println("remote exception while unbinding");
+        } catch (NotBoundException nbe) {
+            System.out.println("billingserver already unbound");
+        }
+	try {
+	    UnicastRemoteObject.unexportObject(stub, true);
+	} catch (NoSuchObjectException ex) {
+            System.out.println("no such object to unexport");
+	}
+        
     }
     
 }

@@ -27,13 +27,12 @@ public static void main(String[] args) throws IOException {
 	
     ioReader ioReader = new ioReader();
     ioReader.start();
-    System.out.println("yeaj");
+    
     bs = new BillingServer();
     bs.start(args);
     }
     
     public static void shutdown() throws RemoteException, AccessException, NotBoundException{
-	ioReader.interrupted();
 	bs.shutdown();
     }
 

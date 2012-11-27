@@ -1,8 +1,3 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
-
 package dslab.billingserver;
 
 import java.rmi.Remote;
@@ -20,7 +15,7 @@ public interface BillingServerSecureInterface extends Remote{
      * Think of a suitable way to represent the list of price step 
      * configurations inside your PriceSteps class.
      */
-    public PriceSteps getPriceSteps();
+    public PriceSteps getPriceSteps()  throws RemoteException;
     
     /**
      * This method allows to create a price step for a given price interval. 
@@ -58,7 +53,7 @@ public interface BillingServerSecureInterface extends Remote{
      * @param auctionID
      * @param price 
      */
-    public void billAuction(String user, long auctionID, double price);
+    public void billAuction(String user, long auctionID, double price)  throws RemoteException;
     
     /**
     * This method calculates and returns the bill for a given user, 
@@ -70,5 +65,5 @@ public interface BillingServerSecureInterface extends Remote{
     * @param user
     * @return 
      */
-    public Bill getBill(String user);
+    public Bill getBill(String user)  throws RemoteException;
 }

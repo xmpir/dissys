@@ -81,6 +81,7 @@ public class Lists {
 		 }*/
 		if (a.isBid()) {
 		    //TODO here the billingserver comes in
+		    System.out.println("sending bill to billingServer");
 		    BillingServerProtocol.getInstance().sendBill(a.getHighestBidder().getUsername(), a.getId(), (double)a.getHighestBid());
 		    /*
 		     if (a.getHighestBidder().isActive()){

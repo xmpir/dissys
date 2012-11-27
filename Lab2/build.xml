@@ -11,7 +11,7 @@
     <property name="client1.port" value="10401"/><!-- UDP port of 1st Bidding Client -->
     <property name="client2.port" value="10402"/><!-- UDP port of 2nd Bidding Client -->
     <property name="client3.port" value="10403"/><!-- UDP port of 3rd Bidding Client -->
-    <property name="mgmtclient.name" value="your.ManagementClient"/><!-- Management Client's full class name (including the package) -->
+    <property name="mgmtclient.name" value="dslab.managementclient.ManagementClient"/><!-- Management Client's full class name (including the package) -->
     <property name="analytics.name" value="your.AnalyticsServer"/><!-- Analytics Server's full class name (including the package) -->
     <property name="billing.name" value="dslab.billingserver.BillingServerMain"/><!-- Billing Server's full class name (including the package) -->
     <property name="analytics.bindingName" value="AnalyticsServerRef"/><!-- RMI Binding Name of the Analytics Server -->

@@ -11,6 +11,7 @@ public class Updater implements Runnable{
 		this.lists = lists;
 	}
 
+    @Override
 	public void run(){
 	    while(true){
 		lists.updateAuctions();

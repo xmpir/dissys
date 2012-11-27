@@ -15,7 +15,7 @@ import java.util.ArrayList;
 public class Data {
 
     private static Data instance = null;
-    private final ArrayList<Auction> auctions;
+    private ArrayList<Auction> auctions;
     
     /**
      * Default-Konstruktor, der nicht außerhalb dieser Klasse
@@ -42,13 +42,10 @@ public class Data {
     
     public void addAuction(String user, long id, double price){
         synchronized(auctions){
-	    this.auctions.add(new Auction(user, id, price));
+	    instance.auctions.add(new Auction(user, id, price));
 	}
     }
-    
-   
-    
-    
+
     public ArrayList<Auction> getAuctionsByUser(String user){
         
         ArrayList<Auction> answer = new ArrayList<Auction>();
@@ -61,6 +58,8 @@ public class Data {
 	}
         return answer;
     }
+
+    
     
     
     

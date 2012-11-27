@@ -32,6 +32,15 @@ public class Server {
 
 	if (args.length == 3) {
 	    try {
+		setMyProperties();
+	    } catch (IOException ex) {
+		System.out.println("Properties file not found!");
+		return;
+	    }
+	    initializeRmi(args[1], args[2]);
+	    
+	    
+	    try {
 		tcpPort = Integer.parseInt(args[0]);
 		serverSocket = new ServerSocket(tcpPort);
 		ServerListener s = new ServerListener(serverSocket, lists);
@@ -45,27 +54,28 @@ public class Server {
 		    serverSocket.close();
 		    stdIn.close();
 		    scheduler.shutdown();
+		    
+		    try {
+			registry.unbind(args[2]);
+			//registry.unbind(args[1]);
+		    } catch (RemoteException ex) {
+			Logger.getLogger(Server.class.getName()).log(Level.SEVERE, null, ex);
+		    } catch (NotBoundException ex) {
+			Logger.getLogger(Server.class.getName()).log(Level.SEVERE, null, ex);
+		    } 
 		}
 	    } catch (NumberFormatException e) {
 		System.err.println("tcpPort must be an integer!");
 	    } catch (IOException e2) {
 		System.err.println("IOException");
 	    }
-	    try {
-		setMyProperties();
-	    } catch (IOException ex) {
-		System.out.println("Properties file not found!");
-		return;
-	    }
-	    initializeRmi(args[1], args[2]);
+	    
 	} else {
 	    System.err.println("3 arguments required: tcpPort, billingserver, managementserver");
 	}
     }
 
     private static void initializeRmi(String analyticsName, String billingName) {
-
-
 	try {
 	    registry = LocateRegistry.getRegistry(registryHost, Integer.parseInt(registryPort));
 	} catch (RemoteException ex) {
@@ -82,7 +92,7 @@ public class Server {
 	BillingServerProtocol.getInstance().setBillingServer(billingServerStub);
 	BillingServerProtocol.getInstance().login();
 	
-	System.out.println("BillingServer bound");
+	System.out.println("logged in on the billingServer");
 	
     }
 

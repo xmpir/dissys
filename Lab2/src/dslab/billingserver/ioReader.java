@@ -20,26 +20,39 @@ import java.util.logging.Logger;
  */
 public class ioReader extends Thread{
 
-    public void start(){
+    @Override
+    public void run(){
 	try {
 	    BufferedReader stdIn = new BufferedReader(
 	    new InputStreamReader(System.in));
 	    String fromUser;
 	    while ((fromUser = stdIn.readLine()) != null) {
-		if (fromUser.length() > 7 && fromUser.substring(0, 6).equals("!login")){
-			fromUser = fromUser;
-		}
-		System.out.println(fromUser);
+		
 		if (fromUser.equals("!end")){
 		    try {
 			BillingServerMain.shutdown();
 		    } catch (AccessException ex) {
-			Logger.getLogger(ioReader.class.getName()).log(Level.SEVERE, null, ex);
 		    }  catch (RemoteException ex) {
-			Logger.getLogger(ioReader.class.getName()).log(Level.SEVERE, null, ex);
 		    }  catch (NotBoundException ex) {
-			Logger.getLogger(ioReader.class.getName()).log(Level.SEVERE, null, ex);
+		    } finally{
+			break;
 		    }
+		}
+		else if (fromUser.equals("!auctions")){
+		    for(Auction a:Data.getInstance().getAuctions()){
+			System.out.println(a.getLineForBill());
+		    }
+		    System.out.println(Data.getInstance().getAuctions().size());
+		}
+		else if (fromUser.equals("!pricesteps")){
+		    System.out.println(PriceSteps.getInstance().getRepresentation());
+		}
+		else if (fromUser.equals("!billuser")){
+		    for(Auction a:Data.getInstance().getAuctionsByUser("alice")){
+			System.out.println(a.getLineForBill());
+		    }
+		} else{
+		    System.out.println(fromUser);
 		}
 		try {
 		    Thread.sleep(1000);
@@ -49,7 +62,7 @@ public class ioReader extends Thread{
 	    }
 	    stdIn.close();
 	} catch (IOException ex) {
-	    Logger.getLogger(ioReader.class.getName()).log(Level.SEVERE, null, ex);
+	    System.out.println("Problems with closing the IO-Stream");
 	}
     }
     
