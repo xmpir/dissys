@@ -5,13 +5,14 @@
 
 package dslab.billingserver;
 
+import java.io.Serializable;
 import java.rmi.RemoteException;
 
 /**
  *
  * @author Robert Rainer
  */
-public class BillingServerSecure implements BillingServerSecureInterface{
+public class BillingServerSecure implements BillingServerSecureInterface, Serializable{
 
     @Override
     public PriceSteps getPriceSteps() {

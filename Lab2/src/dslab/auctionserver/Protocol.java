@@ -110,9 +110,9 @@ public class Protocol {
 							catch (NumberFormatException e) {
 								return "auctionid must be an integer! Please try again!";
 							}
-							BigDecimal amount;
+							double amount;
 							try{
-								amount = new BigDecimal(input[2]);
+								amount = Double.parseDouble(input[2]);
 							}
 							catch (NumberFormatException e) {
 								return "amount must be a BigDecimal! Please try again!";
@@ -144,4 +144,6 @@ public class Protocol {
 		}
 		return "No input!";
 	}
+	
+	
 }
