@@ -30,7 +30,10 @@ public class BillingServer implements BillingServerInterface, Serializable{
     private static String registryHost;
     private static String registryPort;
     private static String billingServerName;
-    private BillingServerSecureInterface stub;
+    
+    private BillingServerSecure clientInstance;
+    private BillingServerInterface stub;
+    private BillingServerSecureInterface secureStub;
     private Registry registry;
     
     public void setMyProperties() throws IOException{
@@ -80,9 +83,8 @@ public class BillingServer implements BillingServerInterface, Serializable{
                //do nothing, error means registry already exists
                System.out.println("java RMI registry already exists.");
            } 
-	   BillingServerInterface billingServer = new BillingServer();
-           BillingServerInterface stub = (BillingServerInterface) UnicastRemoteObject.exportObject(billingServer, 0);
-           registry.rebind(args[0], stub);
+           stub = (BillingServerInterface) UnicastRemoteObject.exportObject(this, 0);
+           registry.rebind(billingServerName, stub);
            System.out.println("BillingServer bound");
     }
     
@@ -117,12 +119,12 @@ public class BillingServer implements BillingServerInterface, Serializable{
 	}
 	if(md5password != null){
 	    if(this.getMd5(password).equals(md5password)){
-		BillingServerSecure clientInstance = new BillingServerSecure();
+		clientInstance = new BillingServerSecure();
 		
-		stub = (BillingServerSecureInterface) UnicastRemoteObject.exportObject(clientInstance, 0);
+		secureStub=  (BillingServerSecureInterface) UnicastRemoteObject.exportObject(clientInstance, 0);
 		
 		System.out.println(name +" successfully logged in");
-		return stub;
+		return secureStub;
 	    }
 	}
 	
@@ -143,6 +145,8 @@ public class BillingServer implements BillingServerInterface, Serializable{
 	    return hashtext;
     }
     
+    
+    //shutting down both the billingserver-stub and ...secure-stub
     public void shutdown(){
 		
 	try {
@@ -153,10 +157,17 @@ public class BillingServer implements BillingServerInterface, Serializable{
             System.out.println("billingserver already unbound");
         }
 	try {
-	    UnicastRemoteObject.unexportObject(stub, true);
+	    UnicastRemoteObject.unexportObject(clientInstance, true);
 	} catch (NoSuchObjectException ex) {
-            System.out.println("no such object to unexport");
+            System.out.println("no secure billingstub to unexport");
 	}
+	try {
+	    UnicastRemoteObject.unexportObject(this, true);
+	} catch (NoSuchObjectException ex) {
+            System.out.println("no billingstub to unexport");
+	}
+	
+	
         
     }
     

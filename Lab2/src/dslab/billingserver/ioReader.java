@@ -22,22 +22,24 @@ public class ioReader extends Thread{
 
     @Override
     public void run(){
-	try {
+	
 	    BufferedReader stdIn = new BufferedReader(
 	    new InputStreamReader(System.in));
 	    String fromUser;
-	    while ((fromUser = stdIn.readLine()) != null) {
+	try {
+	    while (
+		    
+		    (fromUser = stdIn.readLine()
+		    
+		    ) != null) {
 		
-		if (fromUser.equals("!end")){
-		    try {
-			BillingServerMain.shutdown();
-		    } catch (AccessException ex) {
-		    }  catch (RemoteException ex) {
-		    }  catch (NotBoundException ex) {
-		    } finally{
-			break;
-		    }
+		//exit command shuts down the billing-server
+		if (fromUser.equals("!exit")){
+		    BillingServerMain.shutdown();
+		    break;
 		}
+		
+		//other commands are for testing reasons only
 		else if (fromUser.equals("!auctions")){
 		    for(Auction a:Data.getInstance().getAuctions()){
 			System.out.println(a.getLineForBill());
@@ -54,13 +56,19 @@ public class ioReader extends Thread{
 		} else{
 		    System.out.println(fromUser);
 		}
+		
 		try {
 		    Thread.sleep(1000);
 		} catch (InterruptedException ex) {
-		    Logger.getLogger(ioReader.class.getName()).log(Level.SEVERE, null, ex);
+		    System.out.println("IO Interrupted");
+		    break;
 		}
 	    }
-	    stdIn.close();
+	} catch (IOException ex) {
+	    System.out.println("Problems with reading from the IO-Stream");	}
+	try{
+	stdIn.close();
+	System.out.println("IO Stream closed");
 	} catch (IOException ex) {
 	    System.out.println("Problems with closing the IO-Stream");
 	}
