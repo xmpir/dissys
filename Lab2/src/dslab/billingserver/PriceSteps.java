@@ -72,13 +72,13 @@ public class PriceSteps implements Serializable{
 	
         for(int i=0; i<this.steps.size(); ++i){
            double[] current = steps.get(i);
-           if(endPrice<current[0]){
-               //the interval ends smaller than the current interval starts
+           if(endPrice<=current[0]){
+               //the interval ends smaller(=) than the current interval starts
                //therefore insert it before the current interval
 	       //check for the endprice of the interval before
                if(i>0){
                    double[] before = steps.get(i-1);
-		   if(before[1]<startPrice){
+		   if(before[1]<=startPrice){
 		       //this is ok
 		       this.steps.add(i, step);
 		       return;
@@ -101,7 +101,7 @@ public class PriceSteps implements Serializable{
 	
 	double[] last = steps.get(steps.size()-1);
 	
-	if(last[1]<startPrice){
+	if(last[1]<=startPrice){
 	    steps.add(step);
 	} else{
 	    throw new InvalidArgumentsException("interval overlaps with the last interval");
@@ -126,10 +126,11 @@ public class PriceSteps implements Serializable{
     public double getVariable(double price){
     //TODO do some calculations
         double[] current;
+	//System.out.println("looking up variable price for: "+price);
 	for(int i=0; i<this.steps.size(); ++i){
            current = steps.get(i);
            if(price>=current[0] && price<=current[1]){
-	       return current[3]*price;
+	       return current[3]*price/100.0;
 	   }
         }
         return 0;

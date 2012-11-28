@@ -4,9 +4,6 @@ import java.math.BigDecimal;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
-import dslab.analyticsserver.BidEvent;
-import dslab.analyticsserver.EventNotFoundException;
-
 public class Auction{
 	private static int counter = 1;
 	private Date end;
@@ -58,15 +55,6 @@ public class Auction{
 			temp = highestBidder;
 			highestBidder = user;
 			highestBid = amount;
-			if (bid){
-			try {
-				
-				AnalyticsServerProtocol.getInstance().processEvent(new BidEvent(BidEvent.overbid, new Date().getTime(), temp.getUsername(), getId(), amount));
-			} catch (EventNotFoundException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-			}
 			/* UDP:
 			if (bid){
 			    String message = "!new-bid " + getDescription();
@@ -148,9 +136,5 @@ public class Auction{
 
 	public static synchronized int incrementCount(){
 		return counter++;
-	}
-	
-	public static synchronized int getCounter(){
-		return counter;
 	}
 }

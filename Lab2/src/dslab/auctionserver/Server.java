@@ -1,6 +1,5 @@
 package dslab.auctionserver;
 
-import dslab.analyticsserver.AnalyticsCallbackInterface;
 import dslab.billingserver.BillingServerInterface;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
@@ -21,8 +20,6 @@ public class Server {
     private static String registryHost;
     private static String registryPort;
     private static BillingServerInterface billingServerStub;
-    private static AnalyticsCallbackInterface callbackStub;
-
 
     public static void main(String[] args) {
 	int tcpPort = 0;
@@ -60,7 +57,7 @@ public class Server {
 		    
 		    try {
 			registry.unbind(args[2]);
-			registry.unbind(args[1]);
+			//registry.unbind(args[1]);
 		    } catch (RemoteException ex) {
 			Logger.getLogger(Server.class.getName()).log(Level.SEVERE, null, ex);
 		    } catch (NotBoundException ex) {
@@ -91,18 +88,10 @@ public class Server {
 	} catch (NotBoundException ex) {
 	    System.out.println("BillingServer not bound");
 	}
-	
-	try {
-	   callbackStub = (AnalyticsCallbackInterface) registry.lookup(analyticsName);
-	} catch (RemoteException ex) {
-	    System.out.println("Connection to AnalyticsServer not established");
-	} catch (NotBoundException ex) {
-	    System.out.println("AnalyticsServer not bound");
-	}
 
-	AnalyticsServerProtocol.getInstance().setCallback(callbackStub);
 	BillingServerProtocol.getInstance().setBillingServer(billingServerStub);
 	BillingServerProtocol.getInstance().login();
+	
 	System.out.println("logged in on the billingServer");
 	
     }

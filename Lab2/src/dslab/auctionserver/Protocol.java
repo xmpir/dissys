@@ -4,14 +4,9 @@ import java.math.BigDecimal;
 import java.net.InetAddress;
 import java.util.Date;
 
-import dslab.analyticsserver.AuctionEvent;
-import dslab.analyticsserver.BidEvent;
-import dslab.analyticsserver.EventNotFoundException;
-import dslab.analyticsserver.UserEvent;
-
 public class Protocol {
-
-
+    
+    
 	private User currentUser;
 	private Lists lists;
 
@@ -40,15 +35,9 @@ public class Protocol {
 								}
 							}
 							currentUser.setActive(true);
-
+							
 							currentUser.setAddress(address);
 							currentUser.getMessages();
-							try {
-								AnalyticsServerProtocol.getInstance().processEvent(new UserEvent(UserEvent.login, new Date().getTime(), currentUser.getUsername()));
-							} catch (EventNotFoundException e) {
-								// TODO Auto-generated catch block
-								e.printStackTrace();
-							}
 							return "!login " + currentUser.getUsername() + System.getProperty("line.separator") + "Successfully logged in as " + currentUser.getUsername() + "!";
 						}
 						return "!login " + currentUser.getUsername() + System.getProperty("line.separator") +  "Already logged in as " + currentUser.getUsername() + "! Please log out before you log in again!";
@@ -62,12 +51,6 @@ public class Protocol {
 							currentUser.logout();
 							String username = currentUser.getUsername();
 							currentUser = null;
-							try {
-								AnalyticsServerProtocol.getInstance().processEvent(new UserEvent(UserEvent.logout, new Date().getTime(), username));
-							} catch (EventNotFoundException e) {
-								// TODO Auto-generated catch block
-								e.printStackTrace();
-							}
 							return "!logout" + System.getProperty("line.separator") + "Successfully logged out as " + username + "!";
 						}
 						return "You have to log in first!";	
@@ -90,16 +73,7 @@ public class Protocol {
 								description += " " + input[i];
 							}
 							Auction auction = new Auction(description, duration, new Date(), currentUser);
-							synchronized(lists){
-								lists.addAuction(auction);
-								try {
-									int i = lists.getAuctionIndex(auction);
-									AnalyticsServerProtocol.getInstance().processEvent(new AuctionEvent(AuctionEvent.started, new Date().getTime(), Auction.getCounter()-1));
-								} catch (EventNotFoundException e) {
-									// TODO Auto-generated catch block
-									e.printStackTrace();
-								}
-							}
+							lists.addAuction(auction);
 							return "An auction '" + auction.getDescription() + "' with id " + auction.getId() +  " has been created and will end on " + auction.getEndDate() + ".";
 						}
 						return "You have to log in to create an auction item!";	
@@ -155,12 +129,6 @@ public class Protocol {
 							}
 							boolean success = Boolean.parseBoolean(bidOut);
 							if (success){
-								try {
-									AnalyticsServerProtocol.getInstance().processEvent(new BidEvent(BidEvent.placed, new Date().getTime(), currentUser.getUsername(), id, amount));
-								} catch (EventNotFoundException e) {
-									// TODO Auto-generated catch block
-									e.printStackTrace();
-								}
 								return "You successfully bid with " + amount + " on '" + auction.getDescription() + "'.";
 							}
 							return "You unsuccessfully bid with " + amount + " on '" + auction.getDescription() + "'. Current highest bid is " + auction.getHighestBid() + ".";
@@ -176,6 +144,6 @@ public class Protocol {
 		}
 		return "No input!";
 	}
-
-
+	
+	
 }

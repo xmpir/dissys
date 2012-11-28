@@ -1,8 +1,5 @@
 package dslab.auctionserver;
 
-import dslab.analyticsserver.AuctionEvent;
-import dslab.analyticsserver.BidEvent;
-import dslab.analyticsserver.EventNotFoundException;
 import dslab.billingserver.BillingServerInterface;
 import java.util.ArrayList;
 import java.util.Date;
@@ -86,13 +83,6 @@ public class Lists {
 		    //TODO here the billingserver comes in
 		    System.out.println("sending bill to billingServer");
 		    BillingServerProtocol.getInstance().sendBill(a.getHighestBidder().getUsername(), a.getId(), (double)a.getHighestBid());
-		    try {
-				AnalyticsServerProtocol.getInstance().processEvent(new BidEvent(BidEvent.placed, new Date().getTime(), a.getHighestBidder().getUsername(), a.getId(), a.getHighestBid()));
-			} catch (EventNotFoundException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-		    
 		    /*
 		     if (a.getHighestBidder().isActive()){
 		     ServerNotifier highestBidder = new ServerNotifier(a.getHighestBidder().getAddress(), a.getHighestBidder().getUdpPort());
@@ -101,12 +91,6 @@ public class Lists {
 		     else {
 		     a.getHighestBidder().addMessage(message);
 		     }*/
-		}
-		try {
-			AnalyticsServerProtocol.getInstance().processEvent(new AuctionEvent(AuctionEvent.ended, new Date().getTime(), a.getId()));
-		} catch (EventNotFoundException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
 		}
 	    }
 	}
