@@ -17,6 +17,7 @@ public class Data {
     private static Data instance = null;
     private ArrayList<Auction> auctions;
     
+    
     /**
      * Default-Konstruktor, der nicht außerhalb dieser Klasse
      * aufgerufen werden kann
@@ -58,6 +59,17 @@ public class Data {
 	}
         return answer;
     }
+    
+    public Bill getBill(String user){
+	
+	String billString="auction_ID	strike_price	fee_fixed	fee_variable	fee_total +\n";
+	for(Auction a : getAuctionsByUser(user)){
+	    billString+= a.getLineForBill() + "\n";
+	}
+		
+	return new Bill(billString);
+    }
+	    
 
     
     

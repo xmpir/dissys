@@ -8,6 +8,7 @@ import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 import dslab.billingserver.BillingServerInterface;
 import dslab.billingserver.BillingServerSecureInterface;
+import java.rmi.NotBoundException;
 
 
 public class ManagementClient {
@@ -35,7 +36,7 @@ public class ManagementClient {
 				}
 				//Data.getInstance().initUsers();
 				try {
-					String name = "BillingServerRef";
+					String name = args[1];
 					Registry registry = LocateRegistry.getRegistry(registryHost, port);
 					BillingServerInterface billingServer = (BillingServerInterface) registry.lookup(name);
 					BillingServerSecureInterface secure = null;
@@ -52,10 +53,9 @@ public class ManagementClient {
 										System.out.println(user + " successfully logged in");
 									}
 									catch (RemoteException e) {
-										System.err.println("BillingServer exception:");
-										e.getMessage();
+										System.out.println("BillingServer exception: "+e.getMessage());
+										
 									}
-
 								}
 								else System.out.println("Wrong command: !login requires exactly two additional arguments! Usage: !login name password");
 							}
@@ -70,8 +70,7 @@ public class ManagementClient {
 								}
 								else System.out.println("Wrong command: !logout requires no additional argument! Usage: !logout");
 							}
-
-							if (input[0].equals("!steps")){
+							else if (input[0].equals("!steps")){
 								if (input.length == 1){
 									if (secure != null){
 										System.out.println(secure.getPriceSteps().getRepresentation());
@@ -90,17 +89,16 @@ public class ManagementClient {
 										double variablePricePercent = 0;
 
 										try{
-											startPrice = Integer.parseInt(input[1]);
-											endPrice = Integer.parseInt(input[2]);
-											fixedPrice = Integer.parseInt(input[3]);
-											variablePricePercent = Integer.parseInt(input[4]);
+											startPrice = Double.parseDouble(input[1]);
+											endPrice = Double.parseDouble(input[2]);
+											fixedPrice = Double.parseDouble(input[3]);
+											variablePricePercent = Double.parseDouble(input[4]);
 											try{
 												secure.createPriceStep(startPrice, endPrice, fixedPrice, variablePricePercent);
 												System.out.println("Step [" + startPrice + " " + endPrice + "] successfully added");
 											}
 											catch (RemoteException e) {
-												System.err.println("BillingServer exception:");
-												e.getMessage();
+												System.out.println("BillingServer exception: "+e.getMessage());
 											}
 										}
 										catch (NumberFormatException nfe){
@@ -126,7 +124,7 @@ public class ManagementClient {
 												System.out.println("Price step [" + startPrice + " " + endPrice + "] successfully removed");
 											}
 											catch (RemoteException e){
-												e.getMessage();
+												System.out.println("BillingServer exception: "+e.getMessage());
 											}
 										}
 										catch (NumberFormatException nfe){
@@ -141,12 +139,19 @@ public class ManagementClient {
 							else if (input[0].equals("!bill")){
 								if (input.length == 2){
 									if (secure != null){
-											System.out.println(secure.getBill(input[1]).toString());
+											try{
+												System.out.println(secure.getBill(input[1]).toString());
+											}
+											catch (RemoteException e){
+												System.out.println(e.getMessage());
+											}
 
 									}
 									else System.out.println("ERROR: You are currently not logged in.");
 								}
 								else System.out.println("Wrong command: !removeStep requires exactly two additional arguments! Usage: !removeStep startPrice endPrice");
+							} else if (input[0].equals("!exit")){
+								break;
 							}
 							else System.out.println("Command not recognized! Please use either !login, !logout, !addStep, !removeStep or !bill !");
 							
@@ -155,9 +160,11 @@ public class ManagementClient {
 						else System.out.println("Please enter command!");
 					}
 					stdIn.close();
-				} catch (Exception e) {
-					System.err.println("BillingServer exception:");
-					e.getMessage();
+				} catch (NotBoundException e){
+					System.out.println("BillingServer not bound");
+				} catch (IOException e) {
+					System.out.println("IOException");
+					//e.getMessage();
 				}
 			}
 			catch (IOException e) {

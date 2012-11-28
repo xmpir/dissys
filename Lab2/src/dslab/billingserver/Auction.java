@@ -5,11 +5,13 @@
 
 package dslab.billingserver;
 
+import java.io.Serializable;
+
 /**
  * Entity-Klasse für eine Auction
  * @author Robert Rainer
  */
-public class Auction {
+public class Auction implements Serializable{
     private String user;
     private long id;
     private double price;
@@ -51,12 +53,10 @@ public class Auction {
      */
     public String getLineForBill(){
         
-        String line = this.id + "   "  + this.getPrice() + "   " + 
-                PriceSteps.getInstance().getFixed(price) + "   " + 
-                PriceSteps.getInstance().getVariable(price)  + "    " 
-                + (PriceSteps.getInstance().getFixed(price)+PriceSteps.getInstance().getVariable(price) );
-        
-        
+        String line = "  "  + this.id + "          "  + this.getPrice() + "           " + 
+                PriceSteps.getInstance().getFixed(this.price) + "          " + 
+                PriceSteps.getInstance().getVariable(this.price)  + "          " 
+                + (PriceSteps.getInstance().getFixed(this.price)+PriceSteps.getInstance().getVariable(price) );
         return line;
     }
     

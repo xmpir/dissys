@@ -8,6 +8,7 @@
     <property name="server.name" value="dslab.auctionserver.Server"/><!-- Server's full class name (including the package) -->
     <property name="server.host" value="localhost"/><!-- Auction Server's host -->
     <property name="client.name" value="dslab.bidclient.Client"/><!-- Bidding Client's full class name (including the package) -->
+    <property name="test.name" value="dslab.loadtest.Test"/><!-- class testComponent -->
     <property name="client1.port" value="10401"/><!-- UDP port of 1st Bidding Client -->
     <property name="client2.port" value="10402"/><!-- UDP port of 2nd Bidding Client -->
     <property name="client3.port" value="10403"/><!-- UDP port of 3rd Bidding Client -->
@@ -98,7 +99,7 @@
     </target>
 
     <target name="run-loadtest" depends="compile" description="Run Load Test.">
-        <java classname="${client.name}" fork="true" classpathref="project.classpath">
+        <java classname="${test.name}" fork="true" classpathref="project.classpath">
             <arg value="${server.host}"/>
             <arg value="${server.port}"/>
             <arg value="${analytics.bindingName}"/>

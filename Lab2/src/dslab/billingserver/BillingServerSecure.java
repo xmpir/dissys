@@ -26,7 +26,7 @@ public class BillingServerSecure implements BillingServerSecureInterface, Serial
 
     @Override
     public void deletePriceStep(double startPrice, double endPrice) throws RemoteException {
-        PriceSteps.getInstance().deletePriceStep();
+        PriceSteps.getInstance().deletePriceStep(startPrice, endPrice);
     }
 
     @Override
@@ -37,7 +37,7 @@ public class BillingServerSecure implements BillingServerSecureInterface, Serial
 
     @Override
     public Bill getBill(String user)  throws RemoteException{
-        throw new UnsupportedOperationException("Not supported yet.");
+        return Data.getInstance().getBill(user);
     }
 
     

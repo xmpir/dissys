@@ -6,6 +6,7 @@
 package dslab.billingserver;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 
 /**
  * @author Robert Rainer
@@ -13,8 +14,16 @@ import java.io.Serializable;
 public class Bill implements Serializable{
 
     
-    private String bill;
+    private String billString;
     
+    public Bill(String billString){
+	this.billString = billString;
+    }
+    
+    @Override
+    public String toString(){
+	return this.billString;
+    }
     
     
 }
