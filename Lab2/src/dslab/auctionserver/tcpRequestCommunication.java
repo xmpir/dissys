@@ -4,6 +4,11 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.net.InetAddress;
+import java.util.Date;
+
+import dslab.analyticsserver.BidEvent;
+import dslab.analyticsserver.EventNotFoundException;
+import dslab.analyticsserver.UserEvent;
 
 public class tcpRequestCommunication extends Thread{
 	private User currentUser;
@@ -38,8 +43,15 @@ public class tcpRequestCommunication extends Thread{
 					out.println(output[i]);
 				}
 			}
+			
 		}
 		catch (IOException e) {
+			try {
+				AnalyticsServerProtocol.getInstance().processEvent(new UserEvent(UserEvent.disconnect, new Date().getTime(), currentUser.getUsername()));
+			} catch (EventNotFoundException enf) {
+				// TODO Auto-generated catch block
+				enf.printStackTrace();
+			}
 			System.out.println("Exiting tcpRequestCommunication");
 		}
 	}

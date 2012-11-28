@@ -20,36 +20,57 @@ import java.util.logging.Logger;
  */
 public class ioReader extends Thread{
 
-    public void start(){
-	try {
+    @Override
+    public void run(){
+	
 	    BufferedReader stdIn = new BufferedReader(
 	    new InputStreamReader(System.in));
 	    String fromUser;
-	    while ((fromUser = stdIn.readLine()) != null) {
-		if (fromUser.length() > 7 && fromUser.substring(0, 6).equals("!login")){
-			fromUser = fromUser;
+	try {
+	    while (
+		    
+		    (fromUser = stdIn.readLine()
+		    
+		    ) != null) {
+		
+		//exit command shuts down the billing-server
+		if (fromUser.equals("!exit")){
+		    BillingServerMain.shutdown();
+		    break;
 		}
-		System.out.println(fromUser);
-		if (fromUser.equals("!end")){
-		    try {
-			BillingServerMain.shutdown();
-		    } catch (AccessException ex) {
-			Logger.getLogger(ioReader.class.getName()).log(Level.SEVERE, null, ex);
-		    }  catch (RemoteException ex) {
-			Logger.getLogger(ioReader.class.getName()).log(Level.SEVERE, null, ex);
-		    }  catch (NotBoundException ex) {
-			Logger.getLogger(ioReader.class.getName()).log(Level.SEVERE, null, ex);
+		
+		//other commands are for testing reasons only
+		else if (fromUser.equals("!auctions")){
+		    for(Auction a:Data.getInstance().getAuctions()){
+			System.out.println(a.getLineForBill());
 		    }
+		    System.out.println(Data.getInstance().getAuctions().size());
 		}
+		else if (fromUser.equals("!pricesteps")){
+		    System.out.println(PriceSteps.getInstance().getRepresentation());
+		}
+		else if (fromUser.equals("!billuser")){
+		    for(Auction a:Data.getInstance().getAuctionsByUser("alice")){
+			System.out.println(a.getLineForBill());
+		    }
+		} else{
+		    System.out.println(fromUser);
+		}
+		
 		try {
 		    Thread.sleep(1000);
 		} catch (InterruptedException ex) {
-		    Logger.getLogger(ioReader.class.getName()).log(Level.SEVERE, null, ex);
+		    System.out.println("IO Interrupted");
+		    break;
 		}
 	    }
-	    stdIn.close();
 	} catch (IOException ex) {
-	    Logger.getLogger(ioReader.class.getName()).log(Level.SEVERE, null, ex);
+	    System.out.println("Problems with reading from the IO-Stream");	}
+	try{
+	stdIn.close();
+	System.out.println("IO Stream closed");
+	} catch (IOException ex) {
+	    System.out.println("Problems with closing the IO-Stream");
 	}
     }
     

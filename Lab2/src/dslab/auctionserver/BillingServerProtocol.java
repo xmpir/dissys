@@ -8,8 +8,7 @@ package dslab.auctionserver;
 import dslab.billingserver.BillingServerInterface;
 import dslab.billingserver.BillingServerSecureInterface;
 import java.rmi.RemoteException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+
 
 /**
  *
@@ -34,11 +33,12 @@ public class BillingServerProtocol {
     
     public void login(){
 	try {
-	    billingServerSecure = billingServer.login("auctionServer", "3141592653");
+	    billingServerSecure = (BillingServerSecureInterface) billingServer.login("auctionServer", "3141592653");
 	} catch (RemoteException ex) {
 	    System.out.println("could not login on the billingserver (remote exception)");
 	}
     }
+    
     
     public BillingServerInterface getBillingServer() {
 	return billingServer;
@@ -49,9 +49,14 @@ public class BillingServerProtocol {
     }
     
     public void sendBill(String user, long auctionID, double price){
-	billingServerSecure.billAuction(user, auctionID, price);
-	System.out.println("bill sent to billingServer");
+	try {
+	    billingServerSecure.billAuction(user, auctionID, price);
+	    System.out.println("bill sent to billingServer");
+	} catch (RemoteException ex) {
+	    System.out.println("unable to send the bill");
+	}
     }
+    
     
     
 }

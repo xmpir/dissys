@@ -7,6 +7,7 @@ package dslab.billingserver;
 
 import java.io.IOException;
 import java.rmi.AccessException;
+import java.rmi.NoSuchObjectException;
 import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
@@ -27,14 +28,16 @@ public static void main(String[] args) throws IOException {
 	
     ioReader ioReader = new ioReader();
     ioReader.start();
-    System.out.println("yeaj");
     bs = new BillingServer();
     bs.start(args);
     }
     
-    public static void shutdown() throws RemoteException, AccessException, NotBoundException{
-	ioReader.interrupted();
+    public static void shutdown(){
 	bs.shutdown();
+	System.out.println("RMI-should be shut down.");
+	ioReader.currentThread().interrupt();
+	System.out.println("IO-should be shut down.");
+	
     }
 
 }

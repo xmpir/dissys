@@ -15,28 +15,29 @@ import java.rmi.RemoteException;
 public class BillingServerSecure implements BillingServerSecureInterface, Serializable{
 
     @Override
-    public PriceSteps getPriceSteps() {
-        throw new UnsupportedOperationException("Not supported yet.");
+    public PriceSteps getPriceSteps() throws RemoteException{
+        return PriceSteps.getInstance();
     }
 
     @Override
     public void createPriceStep(double startPrice, double endPrice, double fixedPrice, double variablePricePercent) throws RemoteException {
-        throw new UnsupportedOperationException("Not supported yet.");
+        PriceSteps.getInstance().createPriceStep(startPrice, endPrice, fixedPrice, variablePricePercent);
     }
 
     @Override
     public void deletePriceStep(double startPrice, double endPrice) throws RemoteException {
-        throw new UnsupportedOperationException("Not supported yet.");
+        PriceSteps.getInstance().deletePriceStep(startPrice, endPrice);
     }
 
     @Override
-    public void billAuction(String user, long auctionID, double price) {
-        throw new UnsupportedOperationException("Not supported yet.");
+    public void billAuction(String user, long auctionID, double price)  throws RemoteException{
+	System.out.println("getting in a bill");
+	Data.getInstance().addAuction(user, auctionID, price);
     }
 
     @Override
-    public Bill getBill(String user) {
-        throw new UnsupportedOperationException("Not supported yet.");
+    public Bill getBill(String user)  throws RemoteException{
+        return Data.getInstance().getBill(user);
     }
 
     
