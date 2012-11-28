@@ -13,6 +13,7 @@ import dslab.analyticsserver.EventListenerInterface;
 import dslab.billingserver.BillingServerInterface;
 import dslab.billingserver.BillingServerSecureInterface;
 import java.rmi.NotBoundException;
+import java.rmi.server.UnicastRemoteObject;
 
 
 public class ManagementClient {
@@ -70,7 +71,9 @@ public class ManagementClient {
 
 										}
 									}
-									else System.out.println("Wrong command: !login requires exactly two additional arguments! Usage: !login name password");
+									else {
+									System.out.println("Wrong command: !login requires exactly two additional arguments! Usage: !login name password");
+								    }
 								}
 								else if (input[0].equals("!logout")){
 									if (input.length == 1){
@@ -79,18 +82,26 @@ public class ManagementClient {
 											System.out.println(user + " successfully logged out");
 											user = null;
 										}
-										else System.out.println("You have to log in first!");
+										else {
+										System.out.println("You have to log in first!");
+									    }
 									}
-									else System.out.println("Wrong command: !logout requires no additional argument! Usage: !logout");
+									else {
+									System.out.println("Wrong command: !logout requires no additional argument! Usage: !logout");
+								    }
 								}
 								else if (input[0].equals("!steps")){
 									if (input.length == 1){
 										if (secure != null){
 											System.out.println(secure.getPriceSteps().getRepresentation());
 										}
-										else System.out.println("ERROR: You are currently not logged in.");
+										else {
+										System.out.println("ERROR: You are currently not logged in.");
+									    }
 									}
-									else System.out.println("Wrong command: !steps requires no additional argument! Usage: !steps");
+									else {
+									System.out.println("Wrong command: !steps requires no additional argument! Usage: !steps");
+								    }
 								}
 
 								else if (input[0].equals("!addStep")){
@@ -118,9 +129,13 @@ public class ManagementClient {
 												System.out.println("ERROR: All arguments of !addStep are double.");
 											}
 										}
-										else System.out.println("ERROR: You are currently not logged in.");
+										else {
+										System.out.println("ERROR: You are currently not logged in.");
+									    }
 									}
-									else System.out.println("Wrong command: !addStep requires exactly four additional arguments! Usage: !addStep startPrice endPrice fixedPrice variablePricePercent");
+									else {
+									System.out.println("Wrong command: !addStep requires exactly four additional arguments! Usage: !addStep startPrice endPrice fixedPrice variablePricePercent");
+								    }
 								}
 
 								else if (input[0].equals("!removeStep")){
@@ -144,9 +159,13 @@ public class ManagementClient {
 												System.out.println("ERROR: All arguments of !removeStep are double.");
 											}
 										}
-										else System.out.println("ERROR: You are currently not logged in.");
+										else {
+										System.out.println("ERROR: You are currently not logged in.");
+									    }
 									}
-									else System.out.println("Wrong command: !removeStep requires exactly two additional arguments! Usage: !removeStep startPrice endPrice");
+									else {
+									System.out.println("Wrong command: !removeStep requires exactly two additional arguments! Usage: !removeStep startPrice endPrice");
+								    }
 								}
 
 								else if (input[0].equals("!bill")){
@@ -156,19 +175,23 @@ public class ManagementClient {
 												System.out.println(secure.getBill(input[1]).toString());
 											}
 											catch (RemoteException e){
-												System.out.println(e.getMessage());
+												System.out.println("BillingServer exception: "+e.getMessage());
 											}
 
 										}
 									}
-									else System.out.println("Wrong command: !removeStep requires exactly two additional arguments! Usage: !removeStep startPrice endPrice");
+									else {
+									System.out.println("Wrong command: !removeStep requires exactly two additional arguments! Usage: !removeStep startPrice endPrice");
+								    }
 								} 
 
 								else if (input[0].equals("!exit")){
 									if (input.length == 1){
 										break;
 									}
-									else System.out.println("Wrong command: !exit requires no additional arguments! Usage: !exit");
+									else {
+									System.out.println("Wrong command: !exit requires no additional arguments! Usage: !exit");
+								    }
 								}
 								else if (input[0].equals("!subscribe")){
 									
@@ -177,7 +200,9 @@ public class ManagementClient {
 										
 										System.out.println(callback.subscribe(listener, regEx[1]));
 									}
-									else System.out.println("Wrong command: !subscribe requires exactly one additional argument! Usage: !subscribe filterRegex");
+									else {
+									System.out.println("Wrong command: !subscribe requires exactly one additional argument! Usage: !subscribe filterRegex");
+								    }
 
 								}
 								else if (input[0].equals("!unsubscribe")){
@@ -225,12 +250,14 @@ public class ManagementClient {
 							else System.out.println("Please enter command!");
 						}
 						stdIn.close();
+						UnicastRemoteObject.unexportObject(listener, true);
 					} catch (NotBoundException e){
 						System.out.println("BillingServer not bound");
 					} catch (IOException e) {
 						System.out.println("IOException");
 						//e.getMessage();
 					}
+
 				}
 				catch (IOException e) {
 					e.printStackTrace();

@@ -53,10 +53,10 @@ public class Auction implements Serializable{
      */
     public String getLineForBill(){
         
-        String line = this.id + "    "  + this.getPrice() + "        " + 
-                PriceSteps.getInstance().getFixed(price) + "       " + 
-                PriceSteps.getInstance().getVariable(price)  + "        " 
-                + (PriceSteps.getInstance().getFixed(price)+PriceSteps.getInstance().getVariable(price) );
+        String line = "  "  + this.id + "          "  + this.getPrice() + "           " + 
+                PriceSteps.getInstance().getFixed(this.price) + "          " + 
+                PriceSteps.getInstance().getVariable(this.price)  + "          " 
+                + (PriceSteps.getInstance().getFixed(this.price)+PriceSteps.getInstance().getVariable(price) );
         return line;
     }
     

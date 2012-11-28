@@ -14,19 +14,15 @@ import java.util.ArrayList;
 public class Bill implements Serializable{
 
     
-    private ArrayList<Auction> auctions;
+    private String billString;
     
-    public Bill(ArrayList<Auction> auctions){
-	this.auctions = auctions;
+    public Bill(String billString){
+	this.billString = billString;
     }
     
     @Override
     public String toString(){
-	String answer = "";
-	for(Auction a:auctions){
-	    answer+=a.getLineForBill() + "\n";
-	}
-	return answer;
+	return this.billString;
     }
     
     

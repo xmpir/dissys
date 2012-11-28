@@ -9,7 +9,6 @@ package dslab.loadtest;
  *
  * @author Robert Rainer
  */
-public class AuctionSyncer {
-
+public class TestMgmtClient {
 
 }
