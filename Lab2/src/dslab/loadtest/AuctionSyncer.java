@@ -9,11 +9,6 @@ package dslab.loadtest;
  *
  * @author Robert Rainer
  */
-public class AuctionSyncer extends Thread{
+public class AuctionSyncer {
 
-    @Override
-    public void run(){
-	
-    }
-    
 }

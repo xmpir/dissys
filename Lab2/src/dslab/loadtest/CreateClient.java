@@ -9,6 +9,6 @@ package dslab.loadtest;
  *
  * @author Robert Rainer
  */
-public class TestMgmtClient {
+public class CreateClient {
 
 }

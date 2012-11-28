@@ -39,6 +39,7 @@ public class BillingServerProtocol {
 	}
     }
     
+    
     public BillingServerInterface getBillingServer() {
 	return billingServer;
     }
