@@ -3,7 +3,7 @@
  * and open the template in the editor.
  */
 
-package dslab.loadtest;
+package dslab.analyticsserver;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -22,18 +22,17 @@ public class ioReader extends Thread{
 	    new InputStreamReader(System.in));
 	    String fromUser;
 	try {
-	    while (
-		    
-		    (fromUser = stdIn.readLine()
-		    
-		    ) != null) {
+	    while ((fromUser = stdIn.readLine()) != null) {
 		
-		//exit command shuts down the billing-server
+		//exit command shuts down the analytics-server
 		if (fromUser.equals("!exit")){
-		    
+				AnalyticsServerMain.shutdown();
+		    break;
 		}
-		try {Thread.sleep(1000);} 
-		catch (InterruptedException ex) {
+		
+		try {
+		    Thread.sleep(1000);
+		} catch (InterruptedException ex) {
 		    System.out.println("IO Interrupted");
 		    break;
 		}

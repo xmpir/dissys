@@ -7,10 +7,12 @@ import java.util.concurrent.ScheduledExecutorService;
 import java.io.*;
 import java.net.ServerSocket;
 import java.rmi.AccessException;
+import java.rmi.NoSuchObjectException;
 import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
+import java.rmi.server.UnicastRemoteObject;
 import static java.util.concurrent.TimeUnit.MILLISECONDS;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -42,7 +44,6 @@ public class Server {
 	    }
 	    initializeRmi(args[1], args[2]);
 	    
-	    
 	    try {
 		tcpPort = Integer.parseInt(args[0]);
 		serverSocket = new ServerSocket(tcpPort);
@@ -51,28 +52,52 @@ public class Server {
 		scheduler = Executors.newScheduledThreadPool(2);
 		updater = new Updater(lists);
 		scheduler.scheduleAtFixedRate(updater, 1000, 1000, MILLISECONDS);
+		
 		if ((stdIn.readLine()) != null) {
+		    //shut down
 		    s.interrupt();
 		    lists.logoutUsers();
 		    serverSocket.close();
 		    stdIn.close();
 		    scheduler.shutdown();
 		    
-		    try {
+		    //unbind and unexport RMI stuff
+		    /*try {
 			registry.unbind(args[2]);
+		    } catch (RemoteException ex) {
+			System.out.println("RemoteException while unbinding the billing-server");
+		    } catch (NotBoundException ex) {
+			System.out.println("NotBoundException while unbinding the billing-server");
+		    } 
+		    try {
 			registry.unbind(args[1]);
 		    } catch (RemoteException ex) {
-			Logger.getLogger(Server.class.getName()).log(Level.SEVERE, null, ex);
+			System.out.println("RemoteException while unbinding the analytics-server");
 		    } catch (NotBoundException ex) {
-			Logger.getLogger(Server.class.getName()).log(Level.SEVERE, null, ex);
-		    } 
+			System.out.println("NotBoundException while unbinding the analytics-server");
+		    }
+		    
+		    try {
+		    UnicastRemoteObject.unexportObject(billingServerStub, true);
+		    } catch (NoSuchObjectException ex) {
+			System.out.println("no billingServerStub object to unexport");	    
+		    }
+		    try {
+		    UnicastRemoteObject.unexportObject(BillingServerProtocol.getInstance().getSecure(), true);
+		    } catch (NoSuchObjectException ex) {
+			System.out.println("no BillingServerSecure object to unexport");	    
+		    }
+		    try {
+		    UnicastRemoteObject.unexportObject(callbackStub, true);
+		    } catch (NoSuchObjectException ex) {
+			System.out.println("no callbackStub object to unexport");	    
+		    }*/
 		}
 	    } catch (NumberFormatException e) {
 		System.err.println("tcpPort must be an integer!");
 	    } catch (IOException e2) {
 		System.err.println("IOException");
 	    }
-	    
 	} else {
 	    System.err.println("3 arguments required: tcpPort, billingserver, managementserver");
 	}
@@ -103,7 +128,7 @@ public class Server {
 	AnalyticsServerProtocol.getInstance().setCallback(callbackStub);
 	BillingServerProtocol.getInstance().setBillingServer(billingServerStub);
 	BillingServerProtocol.getInstance().login();
-	System.out.println("logged in on the billingServer");
+	//System.out.println("logged in on the billingServer");
 	
     }
 

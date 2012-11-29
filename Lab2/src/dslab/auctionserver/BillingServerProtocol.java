@@ -32,6 +32,12 @@ public class BillingServerProtocol {
     }
     
     public void login(){
+	
+	if(billingServer==null){
+	    System.out.println("could not login on the billingserver (not bound)");
+	    return;
+	}
+	
 	try {
 	    billingServerSecure = (BillingServerSecureInterface) billingServer.login("auctionServer", "3141592653");
 	} catch (RemoteException ex) {
@@ -49,14 +55,22 @@ public class BillingServerProtocol {
     }
     
     public void sendBill(String user, long auctionID, double price){
+	
+	if(billingServerSecure==null){
+	    System.out.println("could not login on the billingserver (not bound)");
+	    return;
+	}
+	
 	try {
 	    billingServerSecure.billAuction(user, auctionID, price);
-	    System.out.println("bill sent to billingServer");
+	    //System.out.println("bill sent to billingServer");
 	} catch (RemoteException ex) {
 	    System.out.println("unable to send the bill");
 	}
     }
     
-    
+    public BillingServerSecureInterface getSecure(){
+	return this.billingServerSecure;
+    }
     
 }

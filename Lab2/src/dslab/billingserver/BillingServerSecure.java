@@ -31,7 +31,7 @@ public class BillingServerSecure implements BillingServerSecureInterface, Serial
 
     @Override
     public void billAuction(String user, long auctionID, double price)  throws RemoteException{
-	System.out.println("getting in a bill");
+	//System.out.println("getting in a bill");
 	Data.getInstance().addAuction(user, auctionID, price);
     }
 

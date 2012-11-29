@@ -9,6 +9,8 @@ import java.util.Date;
 import dslab.analyticsserver.BidEvent;
 import dslab.analyticsserver.EventNotFoundException;
 import dslab.analyticsserver.UserEvent;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class tcpRequestCommunication extends Thread{
 	private User currentUser;
@@ -50,7 +52,13 @@ public class tcpRequestCommunication extends Thread{
 				AnalyticsServerProtocol.getInstance().processEvent(new UserEvent(UserEvent.disconnect, new Date().getTime(), currentUser.getUsername()));
 			} catch (EventNotFoundException enf) {
 				// TODO Auto-generated catch block
-				enf.printStackTrace();
+				System.out.println(enf.getMessage());
+			} catch (NullPointerException ex){
+			try {
+			    AnalyticsServerProtocol.getInstance().processEvent(new UserEvent(UserEvent.disconnect, new Date().getTime(), "Unknown User"));
+			} catch (EventNotFoundException ex1) {
+			    Logger.getLogger(tcpRequestCommunication.class.getName()).log(Level.SEVERE, null, ex1);
+			}
 			}
 			System.out.println("Exiting tcpRequestCommunication");
 		}

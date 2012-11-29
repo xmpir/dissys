@@ -35,8 +35,8 @@ public static void main(String[] args) throws IOException {
     public static void shutdown(){
 	bs.shutdown();
 	System.out.println("RMI-should be shut down.");
-	ioReader.currentThread().interrupt();
-	System.out.println("IO-should be shut down.");
+	//ioReader.currentThread().interrupt();
+	//System.out.println("IO-should be shut down.");
 	
     }
 

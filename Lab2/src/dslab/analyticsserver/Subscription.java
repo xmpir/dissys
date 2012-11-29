@@ -2,9 +2,8 @@ package dslab.analyticsserver;
 
 import java.util.regex.Pattern;
 
-import dslab.auctionserver.Auction;
 
-public class Subscription {
+public class Subscription{
 	private static int counter = 0;
 	private final int id;
 	Pattern pattern;

@@ -23,10 +23,11 @@ public class BidThread extends Thread{
     
     @Override
     public void run(){
-	while(true){
+	while(Test.active){
 	    try {
-		Thread.sleep(-TestClient.zufall.nextInt(15)+60000/bidsPerMin);
+		
 		client.bid();
+		Thread.sleep(60000/bidsPerMin);
 	    } catch (InterruptedException ex) {
 		break;
 	    }

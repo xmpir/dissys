@@ -31,9 +31,14 @@ public class AnalyticsServerProtocol {
 	}
 	
 	public void processEvent(Event e){
+	    if(callback==null){
+		System.out.println("unable to process Event (analyticsServer not bound - try to restart)");
+		return;
+	    }
+	    
 		try {
 		    callback.processEvent(e);
-		    System.out.println("Event processed");
+		    //System.out.println("Event processed");
 		} catch (RemoteException ex) {
 		    System.out.println("unable to process Event");
 		}

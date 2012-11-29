@@ -18,10 +18,6 @@ public class CreateThread extends Thread{
     private int auctionsPerMin;
     private int auctionDuration;
     
-    public CreateThread(TestClient client){
-	this.client=client;
-    }
-
     public CreateThread(TestClient client, int auctionsPerMin, int auctionDuration) {
 	this.client = client;
 	this.auctionsPerMin = auctionsPerMin;
@@ -30,7 +26,7 @@ public class CreateThread extends Thread{
 
     @Override
     public void run(){
-	while(true){
+	while(Test.active){
 	client.create(auctionDuration);
 	    try {
 		Thread.sleep(-TestClient.zufall.nextInt(15)+60000/auctionsPerMin);

@@ -21,10 +21,10 @@ public class UpdateThread extends Thread {
     
     @Override
     public void run(){
-	while(true){
+	while(Test.active){
 	client.update();
 	    try {
-		Thread.sleep(TestClient.zufall.nextInt(15)+updateIntervalSec*1000);
+		Thread.sleep(updateIntervalSec*1000);
 	    } catch (InterruptedException ex) {
 		break;
 	    }

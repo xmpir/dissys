@@ -27,18 +27,13 @@ public class ioReader extends Thread{
 	    new InputStreamReader(System.in));
 	    String fromUser;
 	try {
-	    while (
-		    
-		    (fromUser = stdIn.readLine()
-		    
-		    ) != null) {
+	    while ((fromUser = stdIn.readLine()) != null) {
 		
 		//exit command shuts down the billing-server
 		if (fromUser.equals("!exit")){
 		    BillingServerMain.shutdown();
 		    break;
 		}
-		
 		//other commands are for testing reasons only
 		else if (fromUser.equals("!auctions")){
 		    for(Auction a:Data.getInstance().getAuctions()){
@@ -56,7 +51,6 @@ public class ioReader extends Thread{
 		} else{
 		    System.out.println(fromUser);
 		}
-		
 		try {
 		    Thread.sleep(1000);
 		} catch (InterruptedException ex) {
@@ -65,7 +59,8 @@ public class ioReader extends Thread{
 		}
 	    }
 	} catch (IOException ex) {
-	    System.out.println("Problems with reading from the IO-Stream");	}
+	    System.out.println("Problems with reading from the IO-Stream");	
+	}
 	try{
 	stdIn.close();
 	System.out.println("IO Stream closed");

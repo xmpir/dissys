@@ -34,9 +34,11 @@ public class TestClient extends Thread{
     private String host;
     private Socket socket = null;
     private PrintWriter out = null;
-    private final ArrayList<Integer> activeAuctions;
+    private ArrayList<Integer> activeAuctions;
     private ExecutorService executor;
+    
     public static Random zufall;
+    
     //private ArrayList<Auction> activeAuctions;
     
     
@@ -48,7 +50,6 @@ public class TestClient extends Thread{
 	this.updateIntervalSec = updateIntervalSec;
 	this.host = host;
 	this.id=id;
-	executor = Executors.newFixedThreadPool(3);
 	activeAuctions = new ArrayList<Integer>();
     }
     
@@ -61,9 +62,11 @@ public class TestClient extends Thread{
 	    socket = new Socket(host, tcpPort);
 	    out = new PrintWriter(socket.getOutputStream(), true);
 	} catch (UnknownHostException ex) {
-	    Logger.getLogger(TestClient.class.getName()).log(Level.SEVERE, null, ex);
+	    System.out.println("auctionserver not found");
+	    return;
 	} catch (IOException ex) {
-	    Logger.getLogger(TestClient.class.getName()).log(Level.SEVERE, null, ex);
+	    System.out.println("auctionserver not found");
+	    return;	
 	}
 	out.println("!login test"+id);
 	out.flush();
@@ -72,14 +75,15 @@ public class TestClient extends Thread{
 	BidThread bidder = new BidThread(this, bidsPerMin);
 	UpdateThread updater = new UpdateThread(this, updateIntervalSec);
 	
-	executor.execute(creater);
-	
-	executor.execute(updater);
-	
-	executor.execute(bidder);
+	creater.start();
+	bidder.start();
+	updater.start();
     }	
     
     public void bid(){
+	if(!Test.active){
+	    return;
+	}
 	if(activeAuctions.size()>0){
 	Date now = new Date();
 	double price = now.getTime()-Test.start.getTime();
@@ -88,14 +92,15 @@ public class TestClient extends Thread{
 	}
     }
     
-   
-    
     public void update(){
+	if(!Test.active){
+	    return;
+	}
 	BufferedReader in = null;
 	try {
 	    in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
 	    
-	    while(!in.ready()){
+	    while(!in.ready()&&Test.active){
 		try {
 		    Thread.sleep(11);
 		} catch (InterruptedException ex) {
@@ -104,35 +109,35 @@ public class TestClient extends Thread{
 	    }
 	    out.println("!list\n");
 	    out.flush();
-	    synchronized(activeAuctions){
+	    
 	    activeAuctions.clear();
 	    String line="  ";
-		while(in.ready()){
+		while(in.ready()&&Test.active){
 		    line = in.readLine();
 		    int index = line.indexOf(".");
 		    if(index>0 && !line.startsWith("An auction") && !line.startsWith("You")){
 		    activeAuctions.add(Integer.parseInt(line.substring(0, index)));
 		    }
 		}
-	    }
-	    System.out.println(id + "auctions synchronized:" + activeAuctions.size());
+	    
+	    in = null;
+	    //System.out.println(id + "auctions synchronized:" + activeAuctions.size());
 	} catch (IOException ex) {
 	    System.out.println("error reading list from server");
 	}
     }
-    
     @Override
     public void interrupt(){
-	out.close();
-	executor.shutdown();
-	executor.shutdownNow();
+	System.out.println("Client interrupted");
 	super.interrupt();
     }
-
+    
     void create(int auctionDuration) {
+	if(!Test.active){
+	    return;
+	}
 	out.println("!create "+auctionDuration+" productFromClient"+id);
 	out.flush();
     }
-
     
 }

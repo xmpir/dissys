@@ -84,8 +84,8 @@ public class Lists {
 		 }*/
 		if (a.isBid()) {
 		    //TODO here the billingserver comes in
-		    System.out.println("sending bill to billingServer");
-		    BillingServerProtocol.getInstance().sendBill(a.getHighestBidder().getUsername(), a.getId(), (double)a.getHighestBid());
+		    //System.out.println("sending bill to billingServer");
+		    BillingServerProtocol.getInstance().sendBill(a.getCreator().getUsername(), a.getId(), (double)a.getHighestBid());
 		    try {
 				AnalyticsServerProtocol.getInstance().processEvent(new BidEvent(BidEvent.placed, new Date().getTime(), a.getHighestBidder().getUsername(), a.getId(), a.getHighestBid()));
 			} catch (EventNotFoundException e) {

@@ -91,7 +91,7 @@ public class BillingServer implements BillingServerInterface, Serializable{
     @Override
     public BillingServerSecureInterface login(String name, String password) throws RemoteException{
         
-	System.out.println(name +" is trying to login");
+	//System.out.println(name +" is trying to login");
 	
 	String md5password=null;
 	java.io.InputStream is = ClassLoader.getSystemResourceAsStream("user.properties");
@@ -123,7 +123,7 @@ public class BillingServer implements BillingServerInterface, Serializable{
 		
 		secureStub=  (BillingServerSecureInterface) UnicastRemoteObject.exportObject(clientInstance, 0);
 		
-		System.out.println(name +" successfully logged in");
+		//System.out.println(name +" successfully logged in");
 		return secureStub;
 	    }
 	}
