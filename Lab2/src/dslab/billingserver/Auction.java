@@ -51,7 +51,7 @@ public class Auction implements Serializable{
      * 
      * @return a String representing this auction on a Bill
      */
-    public String getLineForBill(){
+    public synchronized String getLineForBill(){
         
         String line = "  "  + this.id + "          "  + this.getPrice() + "           " + 
                 PriceSteps.getInstance().getFixed(this.price) + "          " + 

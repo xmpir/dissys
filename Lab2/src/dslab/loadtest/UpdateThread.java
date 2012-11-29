@@ -5,6 +5,8 @@
 
 package dslab.loadtest;
 
+import java.util.Date;
+
 /**
  *
  * @author Robert Rainer
@@ -22,7 +24,11 @@ public class UpdateThread extends Thread {
     @Override
     public void run(){
 	while(Test.active){
+	Date now = new Date();
+        client.log("client update");
 	client.update();
+	client.log("client update finished in "+((new Date()).getTime()-now.getTime()));
+	
 	    try {
 		Thread.sleep(updateIntervalSec*1000);
 	    } catch (InterruptedException ex) {

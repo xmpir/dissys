@@ -29,7 +29,7 @@ public class CreateThread extends Thread{
 	while(Test.active){
 	client.create(auctionDuration);
 	    try {
-		Thread.sleep(-TestClient.zufall.nextInt(15)+60000/auctionsPerMin);
+		Thread.sleep(60000/auctionsPerMin);
 	    } catch (InterruptedException ex) {
 		break;
 	    }

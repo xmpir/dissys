@@ -167,7 +167,7 @@ public class AnalyticsCallback implements AnalyticsCallbackInterface{
 				avg = auction_time_avg;
 			}
 			int ac = getAuctionCounter();
-			avg = (avg*ac + auctionTime)/(ac +1);
+			avg = (avg*(ac-1) + auctionTime)/(ac);
 			auction_time_avg = avg;
 
 			try{
@@ -248,7 +248,7 @@ public class AnalyticsCallback implements AnalyticsCallbackInterface{
 				avg = user_sessiontime_avg;
 			}
 			int sc =  getSessionCounter();
-			avg = (avg*sc + sessionTime)/(sc+1);
+			avg = (avg*(sc-1) + sessionTime)/(sc);
 			user_sessiontime_avg = avg;
 
 			try{

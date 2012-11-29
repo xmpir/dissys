@@ -1,0 +1,51 @@
+My Tech-Specs:
+Win 7 64 Bit
+16 GB RAM
+Intel i7 QuadCore 2.0 GH
+
+Allgemein: das Verhältnis zwischen aPM, aD und uIS ist entscheident für die Performance des loadtests. Wenn zu viele Auctionen laufen dauert die synchronisation der Liste zu lange und es bleibt nicht mehr viel Zeit für bids. 
+
+
+clients: 2000
+aPM: 2
+aD: 125
+uIS: 22
+bPM: 66
+
+Resultat:
+Probleme mit der synchronisation der Auctionsliste, daher funktioniert das biete
+n nicht sehr gut bzw. erst nach einer längeren Zeit.
+CPU Auslastung 20-40% RAM: pendelt sich bei 2GB ein.
+
+clients: 5000
+aPM: 2
+aD: 125
+uIS: 22
+bPM: 66
+
+Resultat:
+Synchronisation der Auctionsliste dauert länger als die auctionsdauer - keine bids mehr möglich.
+CPU Auslastung 20-40% RAM: pendelt sich bei 2GB ein.
+
+clients: 500
+aPM: 2
+aD: 125
+uIS: 22
+bPM: 66
+
+Resultat:
+Funktioniert anfangs sehr gut. Nach einiger Zeit hinkt die Auctionsliste nach.
+CPU Auslastung zwischen 1-20 % RAM bei 1.7GB
+
+clients: 500
+aPM: 10
+aD: 125
+uIS: 22
+bPM: 213
+
+Resultat:
+Probleme mit der synchronisation der Auctionsliste, daher funktioniert das biete
+n nicht sehr gut bzw. erst nach einer längeren Zeit.
+CPU Auslastung 20-40% RAM: pendelt sich bei 2GB ein.
+
+

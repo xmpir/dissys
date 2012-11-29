@@ -36,7 +36,7 @@ public class Data {
         return instance;
     }
 
-    public ArrayList<Auction> getAuctions() {
+    public synchronized ArrayList<Auction> getAuctions() {
         return auctions;
     }
     

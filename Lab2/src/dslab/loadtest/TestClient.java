@@ -40,6 +40,7 @@ public class TestClient extends Thread{
     public static Random zufall;
     
     //private ArrayList<Auction> activeAuctions;
+    private boolean log = false;
     
     
     public TestClient(int tcpPort, int auctionDuration, int auctionsPerMin, int bidsPerMin, int updateIntervalSec, String host, int id) {
@@ -50,6 +51,9 @@ public class TestClient extends Thread{
 	this.updateIntervalSec = updateIntervalSec;
 	this.host = host;
 	this.id=id;
+	if(id==1){
+	    log=true;
+	}
 	activeAuctions = new ArrayList<Integer>();
     }
     
@@ -68,7 +72,7 @@ public class TestClient extends Thread{
 	    System.out.println("auctionserver not found");
 	    return;	
 	}
-	out.println("!login test"+id);
+	out.println("!login test"+id+"\n");
 	out.flush();
 	
 	CreateThread creater = new CreateThread(this, auctionsPerMin, auctionDuration);
@@ -81,14 +85,20 @@ public class TestClient extends Thread{
     }	
     
     public void bid(){
+	log("trying to bid");
 	if(!Test.active){
 	    return;
 	}
+	synchronized(activeAuctions){
 	if(activeAuctions.size()>0){
 	Date now = new Date();
 	double price = now.getTime()-Test.start.getTime();
-	out.println("!bid "+zufall.nextInt(activeAuctions.size())+" "+price+"\n");
+	out.println("!bid "+activeAuctions.get(zufall.nextInt(activeAuctions.size()))+" "+price+"\n");
 	out.flush();
+	log("successfully bid");
+	} else{
+	    log("no auctions listed");
+	}
 	}
     }
     
@@ -107,13 +117,15 @@ public class TestClient extends Thread{
 		    break;
 		}
 	    }
-	    out.println("!list\n");
+	    synchronized(out){
+	    out.println("!list \n");
 	    out.flush();
-	    
+	    }
 	    activeAuctions.clear();
 	    String line="  ";
 		while(in.ready()&&Test.active){
 		    line = in.readLine();
+		    log(line);
 		    int index = line.indexOf(".");
 		    if(index>0 && !line.startsWith("An auction") && !line.startsWith("You")){
 		    activeAuctions.add(Integer.parseInt(line.substring(0, index)));
@@ -121,7 +133,7 @@ public class TestClient extends Thread{
 		}
 	    
 	    in = null;
-	    //System.out.println(id + "auctions synchronized:" + activeAuctions.size());
+	    log(id + "auctions synchronized:" + activeAuctions.size());
 	} catch (IOException ex) {
 	    System.out.println("error reading list from server");
 	}
@@ -138,6 +150,11 @@ public class TestClient extends Thread{
 	}
 	out.println("!create "+auctionDuration+" productFromClient"+id);
 	out.flush();
+    }
+    
+    public void log(String string){
+	if(this.log)
+	System.out.println(string);
     }
     
 }

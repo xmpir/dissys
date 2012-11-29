@@ -166,7 +166,7 @@ public class ManagementClient {
 
 					}
 				    } else {
-					System.out.println("Wrong command: !removeStep requires exactly two additional arguments! Usage: !removeStep startPrice endPrice");
+					System.out.println("Wrong command: !bill requires exactly on additional argument! Usage: !bill username"); ;
 				    }
 				} else if (input[0].equals("!exit")) {
 				    if (input.length == 1) {
