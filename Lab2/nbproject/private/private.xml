@@ -1,4 +1,18 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project-private xmlns="http://www.netbeans.org/ns/project-private/1">
     <editor-bookmarks xmlns="http://www.netbeans.org/ns/editor-bookmarks/2" lastBookmarkId="0"/>
+    <open-files xmlns="http://www.netbeans.org/ns/projectui-open-files/1">
+        <file>file:/C:/Projects/dissys/Lab2/src/dslab/analyticsserver/AnalyticsCallback.java</file>
+        <file>file:/C:/Projects/dissys/Lab2/src/dslab/analyticsserver/Subscription.java</file>
+        <file>file:/C:/Projects/dissys/Lab2/src/dslab/analyticsserver/EventListenerInterface.java</file>
+        <file>file:/C:/Projects/dissys/Lab2/src/dslab/analyticsserver/ioReader.java</file>
+        <file>file:/C:/Projects/dissys/Lab2/src/dslab/loadtest/Test.java</file>
+        <file>file:/C:/Projects/dissys/Lab2/src/dslab/analyticsserver/AnalyticsCallbackInterface.java</file>
+        <file>file:/C:/Projects/dissys/Lab2/src/loadtest.properties</file>
+        <file>file:/C:/Projects/dissys/Lab2/src/dslab/loadtest/TestClient.java</file>
+        <file>file:/C:/Projects/dissys/Lab2/src/dslab/loadtest/BidThread.java</file>
+        <file>file:/C:/Projects/dissys/Lab2/src/dslab/loadtest/CreateThread.java</file>
+        <file>file:/C:/Projects/dissys/Lab2/src/dslab/loadtest/UpdateThread.java</file>
+        <file>file:/C:/Projects/dissys/Lab2/src/dslab/auctionserver/tcpRequestCommunication.java</file>
+    </open-files>
 </project-private>
