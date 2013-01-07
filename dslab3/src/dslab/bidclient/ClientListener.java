@@ -5,9 +5,9 @@ import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 
 public class ClientListener extends Thread{
-	private ClientUser user;
+	private String user;
 
-	ClientListener(ClientUser user){
+	ClientListener(String user){
 		this.user = user;
 	}
 
@@ -28,7 +28,7 @@ public class ClientListener extends Thread{
 					}
 					out += input[input.length-1];
 					out += "' has ended. ";
-					if (user != null && user.getName() != null && user.getName().equals(input[1])){
+					if (user != null && user.equals(input[1])){
 						out += "You";
 					}
 					else{
@@ -36,7 +36,7 @@ public class ClientListener extends Thread{
 					}
 					out += " won with ";
 					out += input[2];
-					if (user != null && user.getName() != null && user.getName().equals(input[1])){
+					if (user != null && user.equals(input[1])){
 						out += "!";
 					}
 					else{

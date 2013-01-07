@@ -9,58 +9,55 @@ import java.util.Date;
 import dslab.analyticsserver.BidEvent;
 import dslab.analyticsserver.EventNotFoundException;
 import dslab.analyticsserver.UserEvent;
+import dslab.channels.Channel;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-public class tcpRequestCommunication extends Thread{
-	private User currentUser;
-	private Lists lists;
-	private BufferedReader in;
-	private PrintWriter out;
-	private InetAddress address;
+public class tcpRequestCommunication extends Thread {
 
-	tcpRequestCommunication(Lists lists, BufferedReader in, PrintWriter out, User currentUser, InetAddress address){
-		this.lists = lists;
-		this.in = in;
-		this.out = out;
-		this.currentUser = currentUser;
-		this.address = address;
-	}
+    private User currentUser;
+    private Lists lists;
+    private final Channel channel;
 
-	public void run(){
-		try{
-			Protocol p = new Protocol(currentUser, lists);
-			String inputLine;
-			String outputWhole;
-			while ((inputLine = in.readLine()) != null) {
-				try{
-					outputWhole = p.processInput(inputLine, address);
-				}
-				catch (UnknownParameterException upe){
-					outputWhole=upe.getMessage();
-				}
-				String[] output = outputWhole.split(System.getProperty("line.separator"));
-				out.println(output.length);
-				for (int i=0; i<output.length; i++){
-					out.println(output[i]);
-				}
-			}
-			
+    tcpRequestCommunication(Lists lists, Channel channel, User currentUser) {
+	this.lists = lists;
+	this.currentUser = currentUser;
+	this.channel = channel;
+
+    }
+
+    public void run() {
+	    Protocol p = new Protocol(currentUser, lists);
+	    String inputLine;
+	    String outputWhole="";
+	    while (true) {
+		inputLine = channel.receive();
+		if(inputLine!=null){
+		try {
+		    outputWhole = p.processInput(inputLine);
+		} catch (UnknownParameterException ex) {
+		    Logger.getLogger(tcpRequestCommunication.class.getName()).log(Level.SEVERE, null, ex);
 		}
-		catch (IOException e) {
-			try {
-				AnalyticsServerProtocol.getInstance().processEvent(new UserEvent(UserEvent.disconnect, new Date().getTime(), currentUser.getUsername()));
-			} catch (EventNotFoundException enf) {
-				// TODO Auto-generated catch block
-				System.out.println(enf.getMessage());
-			} catch (NullPointerException ex){
-			try {
-			    AnalyticsServerProtocol.getInstance().processEvent(new UserEvent(UserEvent.disconnect, new Date().getTime(), "Unknown User"));
-			} catch (EventNotFoundException ex1) {
-			    Logger.getLogger(tcpRequestCommunication.class.getName()).log(Level.SEVERE, null, ex1);
-			}
-			}
-			System.out.println("Exiting tcpRequestCommunication");
+		channel.send(outputWhole);
 		}
+		try {
+		    Thread.sleep(40);
+		} catch (InterruptedException ex) {
+		    break;
+		}
+	    }
+	try {
+	    AnalyticsServerProtocol.getInstance().processEvent(new UserEvent(UserEvent.disconnect, new Date().getTime(), currentUser.getUsername()));
+	} catch (EventNotFoundException enf) {
+	    // TODO Auto-generated catch block
+	    System.out.println(enf.getMessage());
+	} catch (NullPointerException ex) {
+	    try {
+		AnalyticsServerProtocol.getInstance().processEvent(new UserEvent(UserEvent.disconnect, new Date().getTime(), "Unknown User"));
+	    } catch (EventNotFoundException ex1) {
+		Logger.getLogger(tcpRequestCommunication.class.getName()).log(Level.SEVERE, null, ex1);
+	    }
 	}
+	System.out.println("Exiting tcpRequestCommunication");
+    }
 }

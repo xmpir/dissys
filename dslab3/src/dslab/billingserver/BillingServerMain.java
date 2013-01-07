@@ -15,6 +15,7 @@ import java.rmi.registry.Registry;
 import java.rmi.server.UnicastRemoteObject;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.security.Security;
 
 /**
  *
@@ -25,7 +26,9 @@ public class BillingServerMain {
     private static BillingServer bs;
     
 public static void main(String[] args) throws IOException {
-	
+    //initialize Security Provider
+    Security.addProvider(new org.bouncycastle.jce.provider.BouncyCastleProvider());
+
     ioReader ioReader = new ioReader();
     ioReader.start();
     bs = new BillingServer();

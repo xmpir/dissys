@@ -1,5 +1,8 @@
 package dslab.auctionserver;
 
+import dslab.channels.Channel;
+import dslab.channels.ChannelDecorator;
+import dslab.channels.TcpChannel;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -12,54 +15,33 @@ public class tcpRequest implements Runnable {
 	private User currentUser;
 	private BufferedReader in;
 	private PrintWriter out;
-	tcpRequestCommunication t;
+	private tcpRequestCommunication t;
+	private Channel channel;
 
-	tcpRequest(Socket socket, Lists lists) {
+	tcpRequest(Socket socket, Lists lists) throws IOException {
 		this.socket = socket;
 		this.lists = lists;
+		this.channel = new ChannelDecorator(new TcpChannel(socket));
 	}
-
 	@Override
 	public void run() {
 		try{
-			in = new BufferedReader(
-					new InputStreamReader(
-							socket.getInputStream()));
-			out = new PrintWriter(socket.getOutputStream(), true);
-
-			t = new tcpRequestCommunication(lists, in, out, currentUser, socket.getInetAddress());
+			t = new tcpRequestCommunication(lists, channel,	currentUser);
 			t.start();
-
 			t.join();
 			t.interrupt();
 			System.out.println("Exiting tcpRequest");
-			out.close();
-			in.close();
-			socket.close();
+			channel.close();
 		}
-		catch (IOException e) {
-			e.printStackTrace();
-		} catch (InterruptedException e) {
+		catch (InterruptedException e) {
 			// TODO Auto-generated catch block
 			t.interrupt();
 			System.out.println("Exiting tcpRequest");
-			out.close();
-			try {
-				in.close();
-			socket.close();
-			} catch (IOException e1) {
-				e1.printStackTrace();
-			}
+			channel.close();
 		}
 	}
-
 	public void interrupt(){
-		try {
-			out.close();
-			in.close();
-			socket.close();
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
+		channel.close();
+		
 	}
 }
