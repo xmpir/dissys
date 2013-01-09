@@ -20,6 +20,9 @@ import java.util.logging.Logger;
 import javax.crypto.BadPaddingException;
 import javax.crypto.IllegalBlockSizeException;
 import javax.crypto.NoSuchPaddingException;
+import java.security.Key;
+import javax.crypto.Mac; 
+import org.bouncycastle.util.encoders.Base64;
 
 public class Protocol {
 
@@ -34,7 +37,7 @@ public class Protocol {
 	    String[] input = inputWhole.split(" ");
 	    if (input.length > 0) {
 		if (input[0].equals("!list")) {
-		    return this.list(input);
+		    return this.list(input, request);
 		} 
 		else if (input[0].equals("!logout")) {
 		    return this.logout(input, request);
@@ -192,9 +195,32 @@ public class Protocol {
 	return "Wrong command: !bid requires two additional arguments! Usage: bid <auction-id> <amount>";
     }
 
-    private String list(String[] input) {
+    private String list(String[] input, tcpRequestCommunication request) {
 	if (input.length == 1) {
+		if (request.getCurrentUser() == null) {
 	    return Data.getInstance().listAuctions();
+		}
+		else {
+			try{
+			String auctions = Data.getInstance().listAuctions();
+			Key secretKey = request.getCurrentUser().getSecretKey();
+					Mac hMac = Mac.getInstance("HmacSHA256");
+					hMac.init(secretKey);
+					hMac.update(auctions.getBytes());
+					byte[] hash = hMac.doFinal();
+					byte[] hashencoded = Base64.encode(hash);
+					System.out.println(auctions + System.getProperty("line.separator") + hashencoded);
+					return auctions + System.getProperty("line.separator") + hashencoded);
+			}
+			catch (NoSuchAlgorithmException e) {
+			    // TODO Auto-generated catch block
+			    e.printStackTrace();
+			}
+			catch (InvalidKeyException e) {
+			    // TODO Auto-generated catch block
+			    e.printStackTrace();
+			}
+		}
 	}
 	return "Wrong command: !list requires no additional argument! Usage: !list";
     }

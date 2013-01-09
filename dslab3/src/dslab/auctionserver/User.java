@@ -8,6 +8,10 @@ import java.net.InetAddress;
 import java.security.PublicKey;
 import java.util.ArrayList;
 import org.bouncycastle.openssl.PEMReader;
+import java.io.FileInputStream;
+import java.security.Key;
+import javax.crypto.spec.SecretKeySpec;
+import org.bouncycastle.util.encoders.Hex; 
 
 public class User {
 
@@ -18,6 +22,7 @@ public class User {
     private ArrayList<String> messages = new ArrayList<String>();
     private PublicKey publicKey = null;
     private String tcpPort;
+    private Key key = null;
     
     public User(String username) {
 	this.username = username;
@@ -123,5 +128,27 @@ public class User {
     public void setTcpPort(String tcpPort) {
 	this.tcpPort = tcpPort;
     }
+    
+	public void initSecretKey(){
+		byte[] keyBytes = new byte[1024];
+		try{
+			String pathToSecretKey = Data.getInstance().getKeydirpath()+this.username+".key";
+			FileInputStream fis = new FileInputStream(pathToSecretKey);
+			fis.read(keyBytes);
+			fis.close();
+			byte[] input = Hex.decode(keyBytes);
+			key = new SecretKeySpec(input, "HmacSHA256");
+		}
+		catch (FileNotFoundException ex) {
+			System.out.println(this.username+": cannot find his/her secret key file...");
+		}
+		catch (IOException ioe) {
+			System.out.println("ERROR: IOException reading secret key");
+		}
+	}
+	
+	public Key getSecretKey(){
+		return key;
+	}
     
 }
