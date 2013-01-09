@@ -4,17 +4,14 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 public class Updater implements Runnable{
-	Lists lists = Lists.getInstance();
 
-
-	public Updater(Lists lists){
-		this.lists = lists;
+	public Updater(){
 	}
 
     @Override
 	public void run(){
 	    while(true){
-		lists.updateAuctions();
+		Data.getInstance().updateAuctions();
 		try {
 		    Thread.sleep(1000);
 		} catch (InterruptedException ex) {

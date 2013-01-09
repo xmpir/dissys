@@ -9,18 +9,16 @@ class ServerListener extends Thread {
 	private ServerSocket serverSocket;
 	private final ExecutorService pool;
 	private boolean listening = true;
-	private Lists lists;
 
-	public ServerListener(ServerSocket serverSocket, Lists lists) {
+	public ServerListener(ServerSocket serverSocket) {
 		this.serverSocket = serverSocket;
-		this.lists = lists;
 		pool = Executors.newCachedThreadPool();
 	}
 
 	public void run() { // run the service
 		try {
 			while (listening) {
-				pool.execute(new tcpRequest(serverSocket.accept(), lists));
+				pool.execute(new tcpRequest(serverSocket.accept()));
 			}
 			try {
 				serverSocket.close();

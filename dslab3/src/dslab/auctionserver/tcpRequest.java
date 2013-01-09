@@ -1,5 +1,6 @@
 package dslab.auctionserver;
 
+import dslab.channels.Base64Channel;
 import dslab.channels.Channel;
 import dslab.channels.ChannelDecorator;
 import dslab.channels.TcpChannel;
@@ -11,22 +12,20 @@ import java.net.Socket;
 
 public class tcpRequest implements Runnable {
 	private final Socket socket;
-	private Lists lists;
 	private User currentUser;
 	private BufferedReader in;
 	private PrintWriter out;
 	private tcpRequestCommunication t;
 	private Channel channel;
 
-	tcpRequest(Socket socket, Lists lists) throws IOException {
+	tcpRequest(Socket socket) throws IOException {
 		this.socket = socket;
-		this.lists = lists;
-		this.channel = new ChannelDecorator(new TcpChannel(socket));
+		this.channel = new ChannelDecorator(new Base64Channel(new TcpChannel(socket)));
 	}
 	@Override
 	public void run() {
 		try{
-			t = new tcpRequestCommunication(lists, channel,	currentUser);
+			t = new tcpRequestCommunication(channel,currentUser);
 			t.start();
 			t.join();
 			t.interrupt();

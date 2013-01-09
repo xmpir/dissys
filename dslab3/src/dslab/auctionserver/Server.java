@@ -13,6 +13,7 @@ import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 import java.rmi.server.UnicastRemoteObject;
+import java.security.Security;
 import static java.util.concurrent.TimeUnit.MILLISECONDS;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -26,8 +27,8 @@ public class Server {
     private static AnalyticsCallbackInterface callbackStub;
 
     public static void main(String[] args) {
+	Security.addProvider(new org.bouncycastle.jce.provider.BouncyCastleProvider());
 	int tcpPort = 0;
-	Lists lists = Lists.getInstance();
 	BufferedReader stdIn = new BufferedReader(
 		new InputStreamReader(System.in));
 	ServerSocket serverSocket;
@@ -36,25 +37,33 @@ public class Server {
 
 	try {
 	    setMyProperties();
+	    
+	    
 	} catch (IOException ex) {
 	    System.out.println("Properties file not found!");
 	    return;
 	}
 	initializeRmi(args[1], args[2]);
 
+	//stuff for channel communication and key initiation
+	Data.getInstance().setKeydirpath(args[4]);
+	Data.getInstance().setPathToServerPrivKey(args[3]);
+	Data.getInstance().initKeys();
+	
+	
 	try {
 	    tcpPort = Integer.parseInt(args[0]);
 	    serverSocket = new ServerSocket(tcpPort);
-	    ServerListener s = new ServerListener(serverSocket, lists);
+	    ServerListener s = new ServerListener(serverSocket);
 	    s.start();
 	    scheduler = Executors.newScheduledThreadPool(2);
-	    updater = new Updater(lists);
+	    updater = new Updater();
 	    scheduler.scheduleAtFixedRate(updater, 1000, 1000, MILLISECONDS);
 
 	    if ((stdIn.readLine()) != null) {
 		//shut down
 		s.interrupt();
-		lists.logoutUsers();
+		Data.getInstance().logoutUsers();
 		serverSocket.close();
 		stdIn.close();
 		scheduler.shutdown();
@@ -94,7 +103,8 @@ public class Server {
 	} catch (NumberFormatException e) {
 	    System.err.println("tcpPort must be an integer!");
 	} catch (IOException e2) {
-	    System.err.println("IOException");
+	    //e2.printStackTrace();
+	    System.err.println("IOException1");
 	}
     }
 

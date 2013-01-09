@@ -8,16 +8,13 @@ import java.util.logging.Logger;
 
 public class ClientResponseHandler extends Thread {
 
-    private Channel channel;
-
-    ClientResponseHandler(Channel channel) {
-	this.channel = channel;
+    ClientResponseHandler() {
     }
 
     public void run() {
 	String fromServer;
-	while (channel.isOpen()) {
-	    fromServer = channel.receive();
+	while (Data.getInstance().channel.isOpen()) {
+	    fromServer = Data.getInstance().channel.receive();
 	    if(fromServer!=null){
 	    //int lines = Integer.parseInt(fromServer);
 	    System.out.println(fromServer);

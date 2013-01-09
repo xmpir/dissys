@@ -8,6 +8,7 @@ package dslab.billingserver;
 import java.io.IOException;
 import java.io.Serializable;
 import java.math.BigInteger;
+import java.nio.charset.Charset;
 import java.rmi.AccessException;
 import java.rmi.NoSuchObjectException;
 import java.rmi.NotBoundException;
@@ -134,7 +135,7 @@ public class BillingServer implements BillingServerInterface, Serializable{
     //a little helper for doing the md5-hashing
     private String getMd5(String input){
 	    md.reset();
-	    md.update(input.getBytes());
+	    md.update(input.getBytes(Charset.defaultCharset()));
 	    byte[] digest = md.digest();
 	    BigInteger bigInt = new BigInteger(1,digest);
 	    String hashtext = bigInt.toString(16);

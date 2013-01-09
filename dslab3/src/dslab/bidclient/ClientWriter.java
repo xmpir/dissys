@@ -8,8 +8,15 @@ import dslab.channels.Channel;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.io.UnsupportedEncodingException;
+import java.security.InvalidAlgorithmParameterException;
+import java.security.InvalidKeyException;
+import java.security.NoSuchAlgorithmException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.crypto.BadPaddingException;
+import javax.crypto.IllegalBlockSizeException;
+import javax.crypto.NoSuchPaddingException;
 
 /**
  *
@@ -17,26 +24,54 @@ import java.util.logging.Logger;
  */
 public class ClientWriter extends Thread {
 
-    private final Channel channel;
-
-    public ClientWriter(Channel channel) {
-	this.channel = channel;
+    
+    
+    public ClientWriter() {
     }
 
+    @Override
     public void run() {
 	BufferedReader stdIn = new BufferedReader(new InputStreamReader(System.in));
 	String fromUser;
 
 	try {
 	    while ((fromUser = stdIn.readLine()) != null) {
-		if (fromUser.length() > 7 && fromUser.substring(0, 6).equals("!login")) {
-		    //something to add when logging in?
+		if (fromUser.length()>6 && fromUser.substring(0, 6).equals("!login")) {
+		    String[] args = fromUser.split(" ");
+		    if(args.length!=2){
+			System.out.println("!login <username> und nichts sonst!");
+			continue;
+		    } else{
+			Data.getInstance().setUserName(args[1]);
+			System.out.println(args[1]);
+			Data.getInstance().initKeys();
+			try {
+			    
+				Data.getInstance().shakeHands();
+			}
+			catch (UnsupportedEncodingException | InvalidAlgorithmParameterException ex) {
+			    Logger.getLogger(ClientWriter.class.getName()).log(Level.SEVERE, null, ex);
+			} catch (NoSuchAlgorithmException ex) {
+			    Logger.getLogger(ClientWriter.class.getName()).log(Level.SEVERE, null, ex);
+			} catch (InvalidKeyException ex) {
+			    Logger.getLogger(ClientWriter.class.getName()).log(Level.SEVERE, null, ex);
+			} catch (NoSuchPaddingException ex) {
+			    Logger.getLogger(ClientWriter.class.getName()).log(Level.SEVERE, null, ex);
+			} catch (IllegalBlockSizeException ex) {
+			    Logger.getLogger(ClientWriter.class.getName()).log(Level.SEVERE, null, ex);
+			} catch (BadPaddingException ex) {
+			    Logger.getLogger(ClientWriter.class.getName()).log(Level.SEVERE, null, ex);
+			}
+			continue;
+		    }
 		}
-		channel.send(fromUser);
+		//TODO channel reset after logout
+		
+		
+		Data.getInstance().channel.send(fromUser);
 		if (fromUser.equals("!end")) {
 		    break;
 		}
-		
 	    }
 	} catch (IOException ex) {
 	    Logger.getLogger(ClientWriter.class.getName()).log(Level.SEVERE, null, ex);

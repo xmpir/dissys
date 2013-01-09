@@ -1,5 +1,6 @@
 package dslab.bidclient;
 
+import dslab.channels.Base64Channel;
 import dslab.channels.Channel;
 import dslab.channels.ChannelDecorator;
 import dslab.channels.TcpChannel;
@@ -28,16 +29,17 @@ public class Client {
     public static void main(String[] args){
 	//add securityprovider - with this finally it works!
 	Security.addProvider(new org.bouncycastle.jce.provider.BouncyCastleProvider());
-
+	
 	if (args.length == 5) {
 	    host = args[0];
 	    tcpPortHost = args[1];
 	    tcpPortClient = args[2];
+	    Data.getInstance().setClientTcpPort(tcpPortClient);
 	    pathToServerKey = args[3];
 	    Data.getInstance().setPathToServerKey(pathToServerKey);
 	    clientKeyDir = args[4];
 	    Data.getInstance().setKeydirpath(clientKeyDir);
-	    Data.getInstance().initKeys();
+	    
 	    
 	    try {
 		tcpPortHo = Integer.parseInt(tcpPortHost);
@@ -45,12 +47,12 @@ public class Client {
 		
 		try {
 		    socket = new Socket(host, tcpPortHo);
-		    channel = new ChannelDecorator(new TcpChannel(socket));
+		    Data.getInstance().channel = new ChannelDecorator(new Base64Channel(new TcpChannel(socket)));
 		    
-		    ClientWriter clwr = new ClientWriter(channel);
+		    ClientWriter clwr = new ClientWriter();
 		    clwr.start();
 		    
-		    ClientResponseHandler crh = new ClientResponseHandler(channel);
+		    ClientResponseHandler crh = new ClientResponseHandler();
 		    crh.start();
 		    
 		} catch (UnknownHostException e) {
@@ -64,8 +66,7 @@ public class Client {
 	} else {
 	    System.out.println("5 arguments required: hostname hostTcpPort clientTcpPort server-key-pub client-key-dir");
 	}
-    }
-    
+    }    
     
     public static void shutdown(){
 	try {
@@ -75,5 +76,6 @@ public class Client {
 	}
         channel.close();
     }
+    
     
 }

@@ -2,6 +2,7 @@ package dslab.auctionserver;
 
 import java.io.*;
 import java.net.*;
+import java.nio.charset.Charset;
 
 public class ServerNotifier{
 	private InetAddress address;
@@ -17,7 +18,7 @@ public class ServerNotifier{
 		try {
 			socket = new DatagramSocket();
 			byte[] buf = new byte[256];
-			buf = message.getBytes();
+			buf = message.getBytes(Charset.defaultCharset());
 			DatagramPacket packet = new DatagramPacket(buf, buf.length, address, udpPort);
 			socket.send(packet);
 		} catch (IOException e) {

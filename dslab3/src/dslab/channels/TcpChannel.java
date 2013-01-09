@@ -32,11 +32,13 @@ public class TcpChannel implements Channel{
     
     @Override
     public void send(String message) {
-	
 	out.println(message);
 	out.flush();
     }
 
+   
+    
+    
     @Override
     public String receive() {
 	try {
@@ -64,6 +66,8 @@ public class TcpChannel implements Channel{
     public boolean isOpen() {
 	return this.open;
     }
+
+    
 
     
     

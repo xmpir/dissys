@@ -8,32 +8,58 @@ import dslab.analyticsserver.AuctionEvent;
 import dslab.analyticsserver.BidEvent;
 import dslab.analyticsserver.EventNotFoundException;
 import dslab.analyticsserver.UserEvent;
+import java.security.InvalidAlgorithmParameterException;
+import java.security.InvalidKeyException;
+import java.security.NoSuchAlgorithmException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import javax.crypto.BadPaddingException;
+import javax.crypto.IllegalBlockSizeException;
+import javax.crypto.NoSuchPaddingException;
 
 public class Protocol {
 
     private User currentUser;
-    private Lists lists;
 
-    Protocol(User currentUser, Lists lists) {
-	this.lists = lists;
+    Protocol(User currentUser) {
 	this.currentUser = currentUser;
     }
 
-    public String processInput(String inputWhole) throws UnknownParameterException {
+    public String processInput(String inputWhole, tcpRequestCommunication request) throws UnknownParameterException {
 	if (inputWhole != null) {
 	    String[] input = inputWhole.split(" ");
 	    if (input.length > 0) {
-		if (input[0].equals("!login")) {
-		    return this.login(input);
+		if (input[0].equals("!list")) {
+		    return this.list(input);
+		} else {
+		    //check if the user is logged in
+		    if (request.getCurrentUser() != null && request.isShakedHands()) {
+			//go on
+		    } else {
+			try {
+			    return request.shakeHands(inputWhole);
+
+
+			} catch (InvalidAlgorithmParameterException ex) {
+			    Logger.getLogger(Protocol.class.getName()).log(Level.SEVERE, null, ex);
+			} catch (NoSuchAlgorithmException ex) {
+			    Logger.getLogger(Protocol.class.getName()).log(Level.SEVERE, null, ex);
+			} catch (NoSuchPaddingException ex) {
+			    Logger.getLogger(Protocol.class.getName()).log(Level.SEVERE, null, ex);
+			} catch (InvalidKeyException ex) {
+			    Logger.getLogger(Protocol.class.getName()).log(Level.SEVERE, null, ex);
+			} catch (IllegalBlockSizeException ex) {
+			    Logger.getLogger(Protocol.class.getName()).log(Level.SEVERE, null, ex);
+			} catch (BadPaddingException ex) {
+			    Logger.getLogger(Protocol.class.getName()).log(Level.SEVERE, null, ex);
+			}
+		    }
 		}
 		if (input[0].equals("!logout")) {
-		    return this.logout(input);
+		    return this.logout(input, request);
 		}
 		if (input[0].equals("!create")) {
 		    return this.create(input);
-		}
-		if (input[0].equals("!list")) {
-		    return this.list(input);
 		}
 		if (input[0].equals("!end")) {
 		    return this.end(input);
@@ -48,37 +74,9 @@ public class Protocol {
 	return "No input!";
     }
 
-    private String login(String[] input) {
-	if (input.length == 2) {
-	    if (currentUser == null) {
-		currentUser = new User(input[1]);
-		int index = lists.getUserIndex(currentUser);
-		if (index == -1) {
-		    lists.addUser(currentUser);
-		} else {
-		    currentUser = lists.getUser(index);
-		    if (currentUser.isActive()) {
-			currentUser = null;
-			return "User already logged in!";
-		    }
-		}
-		currentUser.setActive(true);
-		//FIXME set the address of the client
-		currentUser.getMessages();
-		try {
-		    AnalyticsServerProtocol.getInstance().processEvent(new UserEvent(UserEvent.login, new Date().getTime(), currentUser.getUsername()));
-		} catch (EventNotFoundException e) {
-		    // TODO Auto-generated catch block
-		    e.printStackTrace();
-		}
-		return "!login " + currentUser.getUsername() + System.getProperty("line.separator") + "Successfully logged in as " + currentUser.getUsername() + "!";
-	    }
-	    return "!login " + currentUser.getUsername() + System.getProperty("line.separator") + "Already logged in as " + currentUser.getUsername() + "! Please log out before you log in again!";
-	}
-	return "Wrong command: !login requires exactly one additional argument! Usage: !login name";
-    }
-
-    private String logout(String[] input) {
+    private String logout(String[] input, tcpRequestCommunication request) {
+	//TODO: kill the secure channel
+	
 	if (input.length == 1) {
 	    if (currentUser != null) {
 		currentUser.logout();
@@ -111,10 +109,10 @@ public class Protocol {
 		    description += " " + input[i];
 		}
 		Auction auction = new Auction(description, duration, new Date(), currentUser);
-		synchronized (lists) {
-		    lists.addAuction(auction);
+		synchronized (Data.getInstance()) {
+		    Data.getInstance().addAuction(auction);
 		    try {
-			int i = lists.getAuctionIndex(auction);
+			int i = Data.getInstance().getAuctionIndex(auction);
 			AnalyticsServerProtocol.getInstance().processEvent(new AuctionEvent(AuctionEvent.started, new Date().getTime(), Auction.getCounter() - 1));
 		    } catch (EventNotFoundException e) {
 			// TODO Auto-generated catch block
@@ -158,11 +156,11 @@ public class Protocol {
 		    return "amount must be a BigDecimal! Please try again!";
 		}
 		Auction auction = new Auction(id);
-		int index = lists.getAuctionIndex(auction);
+		int index = Data.getInstance().getAuctionIndex(auction);
 		if (index == -1) {
 		    return "No such id exists! Please check !list again!";
 		}
-		auction = lists.getAuction(index);
+		auction = Data.getInstance().getAuction(index);
 		String bidOut = auction.bid(currentUser, amount);
 		if (bidOut.equals("You can't bid any more!")) {
 		    return bidOut;
@@ -186,7 +184,7 @@ public class Protocol {
 
     private String list(String[] input) {
 	if (input.length == 1) {
-	    return lists.listAuctions();
+	    return Data.getInstance().listAuctions();
 	}
 	return "Wrong command: !list requires no additional argument! Usage: !list";
     }
