@@ -44,7 +44,6 @@ public class ClientWriter extends Thread {
 			System.out.println(args[1]);
 			Data.getInstance().initKeys();
 			try {
-
 			    Data.getInstance().shakeHands();
 			} catch (UnsupportedEncodingException | InvalidAlgorithmParameterException ex) {
 			    Logger.getLogger(ClientWriter.class.getName()).log(Level.SEVERE, null, ex);
@@ -63,13 +62,14 @@ public class ClientWriter extends Thread {
 		    }
 		}
 		if (fromUser.length() > 7 && fromUser.substring(0, 7).equals("!logout")) {
+		    
 		    String[] args = fromUser.split(" ");
 		    if (args.length != 1) {
 			System.out.println("!logout hat keine Parameter ");
 			continue;
 		    } else {
 			Data.getInstance().channel.send(fromUser);
-			Data.getInstance().resetChannel();
+			System.out.println("!logout sent to server");
 			continue;
 		    }
 		}

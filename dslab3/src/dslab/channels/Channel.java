@@ -18,4 +18,6 @@ public interface Channel {
 
     public void close();
     
+    public void reset();
+    
 }

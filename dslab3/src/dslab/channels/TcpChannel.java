@@ -22,7 +22,9 @@ public class TcpChannel implements Channel{
     private BufferedReader in;
     private Socket socket;
     private final PrintWriter out;
-    private boolean open;
+    private boolean open = true;
+    private boolean reset = false;
+    
     public TcpChannel(Socket socket) throws IOException{
 	open = true;
 	this.socket = socket;
@@ -65,6 +67,16 @@ public class TcpChannel implements Channel{
     @Override
     public boolean isOpen() {
 	return this.open;
+    }
+
+    @Override
+    public boolean isResetting() {
+	return this.reset;
+    }
+
+    @Override
+    public void reset() {
+	this.reset=true;
     }
 
     

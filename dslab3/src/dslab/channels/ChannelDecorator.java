@@ -13,6 +13,7 @@ public class ChannelDecorator implements Channel{
 
     private Channel decoratedChannel;
     
+    
     public ChannelDecorator(Channel decoratedChannel){
 	this.decoratedChannel=decoratedChannel;
     }
@@ -37,6 +38,11 @@ public class ChannelDecorator implements Channel{
     @Override
     public boolean isOpen() {
 	return decoratedChannel.isOpen();
+    }
+
+    @Override
+    public void reset() {
+	decoratedChannel.reset();
     }
 
 

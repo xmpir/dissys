@@ -86,7 +86,7 @@ public class Protocol {
 	    if (request.getCurrentUser() != null) {
 		String username = request.getCurrentUser().getUsername();		
 		synchronized(request){
-		request.getChannel().send("logging out");
+		request.getChannel().send("logging out CODE");
 		request.resetChannel();
 		request.getCurrentUser().logout();
 		request.setCurrentUser(null);

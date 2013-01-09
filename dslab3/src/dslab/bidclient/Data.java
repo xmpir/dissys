@@ -254,18 +254,9 @@ public class Data {
 	}
     }
 
-    public synchronized void resetChannel() {
-	
-	while(this.channel.receive()!=null){
-	    //wait
-	}
-	try {
-	    this.channel= new ChannelDecorator(new Base64Channel(new TcpChannel(socket)));
-	    System.out.println("Channel reset");
-	} catch (IOException ex) {
-	    System.out.println("Client hast difficulties to reset the channel");
-	    this.channel = null;
-	}
+    public void resetChannel() {
+	System.out.println("got here");
+	this.channel.reset();
     }
     
     

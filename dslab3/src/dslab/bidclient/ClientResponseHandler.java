@@ -8,16 +8,22 @@ import java.util.logging.Logger;
 
 public class ClientResponseHandler extends Thread {
 
-    ClientResponseHandler() {
+    public ClientResponseHandler() {
     }
 
+    @Override
     public void run() {
 	String fromServer;
 	while (Data.getInstance().channel.isOpen()) {
 	    fromServer = Data.getInstance().channel.receive();
-	    if(fromServer!=null){
-	    //int lines = Integer.parseInt(fromServer);
-	    System.out.println(fromServer);
+	    if (fromServer != null) {
+		if (fromServer.equals("logging out CODE")) {
+		    System.out.println("logoutCode received");
+		    Data.getInstance().channel.reset();
+		    System.out.println("Channel Reset");
+		    continue;
+		}
+		System.out.println(fromServer);
 	    }
 	    try {
 		Thread.sleep(40);
@@ -25,7 +31,5 @@ public class ClientResponseHandler extends Thread {
 		break;
 	    }
 	}
-
     }
 }
-

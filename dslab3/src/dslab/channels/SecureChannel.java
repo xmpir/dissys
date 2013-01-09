@@ -26,7 +26,9 @@ public class SecureChannel extends ChannelDecorator {
 
     private Key secretKey;
     private AlgorithmParameterSpec iv;
+    private boolean sendEncrypted=true;
 
+    
     public SecureChannel(Channel decoratedChannel, Key key, AlgorithmParameterSpec paramSpec) {
 	super(decoratedChannel);
 	this.secretKey = key;
@@ -38,6 +40,9 @@ public class SecureChannel extends ChannelDecorator {
 	String message = super.receive();
 	if(message==null){
 	    return null;
+	}
+	if(sendEncrypted==false){
+	    return message;
 	}
 	Cipher crypt = null;
 	try {
@@ -70,6 +75,9 @@ public class SecureChannel extends ChannelDecorator {
 	if(message==null){
 	    return;
 	}
+	if(sendEncrypted==false){
+	    super.send(message);
+	}
 	Cipher crypt = null;
 	try {
 	    crypt = Cipher.getInstance("AES/CTR/NoPadding");
@@ -101,4 +109,10 @@ public class SecureChannel extends ChannelDecorator {
 	}
 	super.send(new String(encryptedMessage));
     }
+    
+    @Override
+    public void reset(){
+	sendEncrypted=false;
+    }
+    
 }
