@@ -196,16 +196,10 @@ public class tcpRequestCommunication extends Thread {
 	}
 
 	return "Successfully logged in as " + currentUser.getUsername() + "!";
-	//return "successfully logged in as ";
     }
     
     public synchronized void resetChannel(){
-	try {
-	    this.channel= new ChannelDecorator(new Base64Channel(new TcpChannel(socket)));
-	    System.out.println("Channel reset");
-	} catch (IOException ex) {
-	    Logger.getLogger(tcpRequestCommunication.class.getName()).log(Level.SEVERE, null, ex);
-	}
+	this.channel.reset();
     }
     
 }

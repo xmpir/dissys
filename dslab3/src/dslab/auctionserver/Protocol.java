@@ -31,7 +31,7 @@ public class Protocol {
 
     public String processInput(String inputWhole, tcpRequestCommunication request) throws UnknownParameterException {
 	
-	//System.out.println("got: "+inputWhole);
+	System.out.println("got: "+inputWhole);
 	
 	if (inputWhole != null) {
 	    String[] input = inputWhole.split(" ");
@@ -93,6 +93,7 @@ public class Protocol {
 		request.resetChannel();
 		request.getCurrentUser().logout();
 		request.setCurrentUser(null);
+		System.out.println("user"+username+" logged out");
 		}
 		try {
 		    AnalyticsServerProtocol.getInstance().processEvent(new UserEvent(UserEvent.logout, new Date().getTime(), username));

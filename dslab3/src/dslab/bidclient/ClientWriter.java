@@ -74,7 +74,9 @@ public class ClientWriter extends Thread {
 			continue;
 		    }
 		}
+		
 		Data.getInstance().channel.send(fromUser);
+		
 		if (fromUser.equals("!end")) {
 		    break;
 		}

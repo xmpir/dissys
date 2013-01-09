@@ -86,6 +86,7 @@ public class SecureChannel extends ChannelDecorator {
 	}
 	if(sendEncrypted==false){
 	    super.send(message);
+	    return;
 	}
 	Cipher crypt = null;
 	try {
