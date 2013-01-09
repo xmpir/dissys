@@ -46,7 +46,9 @@ public class ClientWriter extends Thread {
 			try {
 
 			    Data.getInstance().shakeHands();
-			} catch (UnsupportedEncodingException | InvalidAlgorithmParameterException ex) {
+			} catch (UnsupportedEncodingException ex) {
+			    Logger.getLogger(ClientWriter.class.getName()).log(Level.SEVERE, null, ex);
+			} catch (InvalidAlgorithmParameterException ex) {
 			    Logger.getLogger(ClientWriter.class.getName()).log(Level.SEVERE, null, ex);
 			} catch (NoSuchAlgorithmException ex) {
 			    Logger.getLogger(ClientWriter.class.getName()).log(Level.SEVERE, null, ex);
