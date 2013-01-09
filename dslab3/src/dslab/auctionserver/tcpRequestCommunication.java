@@ -9,8 +9,11 @@ import java.util.Date;
 import dslab.analyticsserver.BidEvent;
 import dslab.analyticsserver.EventNotFoundException;
 import dslab.analyticsserver.UserEvent;
+import dslab.channels.Base64Channel;
 import dslab.channels.Channel;
+import dslab.channels.ChannelDecorator;
 import dslab.channels.SecureChannel;
+import dslab.channels.TcpChannel;
 import java.io.UnsupportedEncodingException;
 import java.net.Socket;
 import java.nio.charset.Charset;
@@ -193,8 +196,14 @@ public class tcpRequestCommunication extends Thread {
 	return "Successfully logged in as " + currentUser.getUsername() + "!";
 	//return "successfully logged in as ";
     }
-
-    public Socket getSocket() {
-	return this.socket;
+    
+    public synchronized void resetChannel(){
+	try {
+	    this.channel= new ChannelDecorator(new Base64Channel(new TcpChannel(socket)));
+	    System.out.println("Channel reset");
+	} catch (IOException ex) {
+	    Logger.getLogger(tcpRequestCommunication.class.getName()).log(Level.SEVERE, null, ex);
+	}
     }
+    
 }

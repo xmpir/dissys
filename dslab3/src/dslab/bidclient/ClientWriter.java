@@ -24,8 +24,6 @@ import javax.crypto.NoSuchPaddingException;
  */
 public class ClientWriter extends Thread {
 
-    
-    
     public ClientWriter() {
     }
 
@@ -36,20 +34,19 @@ public class ClientWriter extends Thread {
 
 	try {
 	    while ((fromUser = stdIn.readLine()) != null) {
-		if (fromUser.length()>6 && fromUser.substring(0, 6).equals("!login")) {
+		if (fromUser.length() > 6 && fromUser.substring(0, 6).equals("!login")) {
 		    String[] args = fromUser.split(" ");
-		    if(args.length!=2){
+		    if (args.length != 2) {
 			System.out.println("!login <username> und nichts sonst!");
 			continue;
-		    } else{
+		    } else {
 			Data.getInstance().setUserName(args[1]);
 			System.out.println(args[1]);
 			Data.getInstance().initKeys();
 			try {
-			    
-				Data.getInstance().shakeHands();
-			}
-			catch (UnsupportedEncodingException | InvalidAlgorithmParameterException ex) {
+
+			    Data.getInstance().shakeHands();
+			} catch (UnsupportedEncodingException | InvalidAlgorithmParameterException ex) {
 			    Logger.getLogger(ClientWriter.class.getName()).log(Level.SEVERE, null, ex);
 			} catch (NoSuchAlgorithmException ex) {
 			    Logger.getLogger(ClientWriter.class.getName()).log(Level.SEVERE, null, ex);
@@ -65,9 +62,17 @@ public class ClientWriter extends Thread {
 			continue;
 		    }
 		}
-		//TODO channel reset after logout
-		
-		
+		if (fromUser.length() > 7 && fromUser.substring(0, 7).equals("!logout")) {
+		    String[] args = fromUser.split(" ");
+		    if (args.length != 1) {
+			System.out.println("!logout hat keine Parameter ");
+			continue;
+		    } else {
+			Data.getInstance().channel.send(fromUser);
+			Data.getInstance().resetChannel();
+			continue;
+		    }
+		}
 		Data.getInstance().channel.send(fromUser);
 		if (fromUser.equals("!end")) {
 		    break;

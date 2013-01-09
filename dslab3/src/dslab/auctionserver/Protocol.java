@@ -27,12 +27,28 @@ public class Protocol {
     }
 
     public String processInput(String inputWhole, tcpRequestCommunication request) throws UnknownParameterException {
+	
+	System.out.println("got: "+inputWhole);
+	
 	if (inputWhole != null) {
 	    String[] input = inputWhole.split(" ");
 	    if (input.length > 0) {
 		if (input[0].equals("!list")) {
 		    return this.list(input);
-		} else {
+		} 
+		else if (input[0].equals("!logout")) {
+		    return this.logout(input, request);
+		}
+		else if (input[0].equals("!create")) {
+		    return this.create(input, request);
+		}
+		else if (input[0].equals("!end")) {
+		    return this.end(input, request);
+		}
+		else if (input[0].equals("!bid")) {
+		    return this.bid(input, request);
+		}
+		else {
 		    //check if the user is logged in
 		    if (request.getCurrentUser() != null) {
 			//user is logged in
@@ -57,18 +73,7 @@ public class Protocol {
 			}
 		    }
 		}
-		if (input[0].equals("!logout")) {
-		    return this.logout(input, request);
-		}
-		if (input[0].equals("!create")) {
-		    return this.create(input, request);
-		}
-		if (input[0].equals("!end")) {
-		    return this.end(input, request);
-		}
-		if (input[0].equals("!bid")) {
-		    return this.bid(input, request);
-		}
+		
 		return "Command not recognized! Use !login, !logout, !list, !create, !bid or !end!";
 	    }
 	    return "Empty input!";
@@ -77,25 +82,23 @@ public class Protocol {
     }
 
     private String logout(String[] input, tcpRequestCommunication request) {
-	//TODO: kill the secure channel
-
 	if (input.length == 1) {
 	    if (request.getCurrentUser() != null) {
-		try {
-		    request.setChannel(new ChannelDecorator(new Base64Channel(new TcpChannel(request.getSocket()))));
-		    request.getCurrentUser().logout();
-		    String username = request.getCurrentUser().getUsername();
-		    request.setCurrentUser(null);
-		    try {
-			AnalyticsServerProtocol.getInstance().processEvent(new UserEvent(UserEvent.logout, new Date().getTime(), username));
-		    } catch (EventNotFoundException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		    }
-		    return "!logout" + System.getProperty("line.separator") + "Successfully logged out as " + username + "!";
-		} catch (IOException ex) {
-		    System.out.println("Client Channel reset failed");
+		String username = request.getCurrentUser().getUsername();		
+		synchronized(request){
+		request.getChannel().send("logging out");
+		request.resetChannel();
+		request.getCurrentUser().logout();
+		request.setCurrentUser(null);
 		}
+		try {
+		    AnalyticsServerProtocol.getInstance().processEvent(new UserEvent(UserEvent.logout, new Date().getTime(), username));
+		} catch (EventNotFoundException e) {
+		    // TODO Auto-generated catch block
+		    e.printStackTrace();
+		}
+		System.out.println("Success");
+		return "!logout" + System.getProperty("line.separator") + "Successfully logged out as " + username + "!";
 	    }
 	    return "You have to log in first!";
 	}

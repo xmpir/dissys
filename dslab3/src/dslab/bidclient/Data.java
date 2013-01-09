@@ -6,14 +6,18 @@
 package dslab.bidclient;
 
 import dslab.billingserver.*;
+import dslab.channels.Base64Channel;
 import dslab.channels.Channel;
+import dslab.channels.ChannelDecorator;
 import dslab.channels.SecureChannel;
+import dslab.channels.TcpChannel;
 import java.io.BufferedReader;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.UnsupportedEncodingException;
+import java.net.Socket;
 import java.nio.charset.Charset;
 import java.security.InvalidAlgorithmParameterException;
 import java.security.InvalidKeyException;
@@ -54,6 +58,8 @@ public class Data {
     private String user = "alice";
     private String clientTcpPort;
     public Channel channel;
+    public Socket socket;
+    
     /**
      * Default-Konstruktor, der nicht außerhalb dieser Klasse
      * aufgerufen werden kann
@@ -245,6 +251,20 @@ public class Data {
 	    String thirdMessage = args[2];
 
 	    channel.send(thirdMessage);
+	}
+    }
+
+    public synchronized void resetChannel() {
+	
+	while(this.channel.receive()!=null){
+	    //wait
+	}
+	try {
+	    this.channel= new ChannelDecorator(new Base64Channel(new TcpChannel(socket)));
+	    System.out.println("Channel reset");
+	} catch (IOException ex) {
+	    System.out.println("Client hast difficulties to reset the channel");
+	    this.channel = null;
 	}
     }
     
