@@ -47,20 +47,29 @@ public class SecureChannel extends ChannelDecorator {
 	Cipher crypt = null;
 	try {
 	    crypt = Cipher.getInstance("AES/CTR/NoPadding");
-	} catch (NoSuchAlgorithmException | NoSuchPaddingException ex) {
+	} catch (NoSuchAlgorithmException ex) {
+	    Logger.getLogger(SecureChannel.class.getName()).log(Level.SEVERE, null, ex);
+	    return null;
+	} catch (NoSuchPaddingException ex) {
 	    Logger.getLogger(SecureChannel.class.getName()).log(Level.SEVERE, null, ex);
 	    return null;
 	}
 	try {
 	    crypt.init(Cipher.DECRYPT_MODE, secretKey, iv);
-	} catch (InvalidKeyException | InvalidAlgorithmParameterException ex) {
+	} catch (InvalidKeyException  ex) {
+	    Logger.getLogger(SecureChannel.class.getName()).log(Level.SEVERE, null, ex);
+	    return null;
+	} catch (InvalidAlgorithmParameterException ex) {
 	    Logger.getLogger(SecureChannel.class.getName()).log(Level.SEVERE, null, ex);
 	    return null;
 	}
 	byte[] decryptedMessage = null;
 	try {
 	    decryptedMessage = crypt.doFinal(message.getBytes());
-	} catch (IllegalBlockSizeException | BadPaddingException ex) {
+	} catch (IllegalBlockSizeException ex) {
+	    Logger.getLogger(SecureChannel.class.getName()).log(Level.SEVERE, null, ex);
+	    return null;
+	} catch (BadPaddingException ex) {
 	    Logger.getLogger(SecureChannel.class.getName()).log(Level.SEVERE, null, ex);
 	    return null;
 	}

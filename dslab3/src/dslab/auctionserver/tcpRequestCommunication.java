@@ -145,8 +145,10 @@ public class tcpRequestCommunication extends Thread {
 		currentUser.setActive(true);
 		currentUser.setTcpPort(args[2]);
 		currentUser.initPublicKey();
+		currentUser.initSecretKey();
 	    } else {
-		return "!login " + currentUser.getUsername() + System.getProperty("line.separator") + "Already logged in as " + currentUser.getUsername() + "! Please log out before you log in again!";
+	    	return "Already logged in! Log out first!";
+		//return "!login " + currentUser.getUsername() + System.getProperty("line.separator") + "Already logged in as " + currentUser.getUsername() + "! Please log out before you log in again!";
 	    }
 	}
 
