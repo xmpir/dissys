@@ -10,6 +10,9 @@ import java.util.ArrayList;
 import org.bouncycastle.openssl.PEMReader;
 import java.io.FileInputStream;
 import java.security.Key;
+import java.security.KeyPair;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.crypto.spec.SecretKeySpec;
 import org.bouncycastle.util.encoders.Hex; 
 
@@ -102,7 +105,16 @@ public class User {
 	    }
 	    try {
 		publicKey = (PublicKey) publIn.readObject();
-	    } catch (IOException ex) {
+	    } catch(ClassCastException es){
+		KeyPair pair = null;
+		try {
+		    pair = (KeyPair) publIn.readObject();
+		} catch (IOException ex) {
+		    Logger.getLogger(User.class.getName()).log(Level.SEVERE, null, ex);
+		}
+		publicKey= pair.getPublic();
+	    }
+	    catch (IOException ex) {
 		//TODO
 	    }
 	    try {

@@ -23,7 +23,6 @@ public class Client {
     private static String clientKeyDir;
     private static int tcpPortHo;
     private static int tcpPortCli;
-    private static Channel channel;
     
     
     public static void main(String[] args){
@@ -74,7 +73,7 @@ public class Client {
 	} catch (IOException ex) {
 	    Logger.getLogger(Client.class.getName()).log(Level.SEVERE, null, ex);
 	}
-        channel.close();
+	Data.getInstance().channel.close();
     }
     
     
