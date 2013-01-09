@@ -195,16 +195,17 @@ public class Data {
 	secureRandom.nextBytes(number);
 	
 	byte[] encodedNumber = Base64.encode(number);
-	
-	String firstMessage = "!login "+user+" "+clientTcpPort+" "+(new String(encodedNumber, Charset.defaultCharset()));
-	byte[] message = firstMessage.getBytes(Charset.defaultCharset());
+	String clientChallenge = new String(encodedNumber);
+	String firstMessage = "!login "+user+" "+clientTcpPort+" "+(clientChallenge);
 	assert firstMessage.matches("!login [a-zA-Z0-9_\\-]+ [0-9]+ ["+B64+"]{43}=") : "1st message";
+	
+	byte[] message = firstMessage.getBytes();
 	Cipher crypt = Cipher.getInstance("RSA/NONE/OAEPWithSHA256AndMGF1Padding"); 
 	crypt.init(Cipher.ENCRYPT_MODE, publicKeyServer);
 	
 	message = crypt.doFinal(message);
 	message = Base64.encode(message);
-	String encryptedFirstMessage = new String(message, Charset.defaultCharset());
+	String encryptedFirstMessage = new String(message);
 	channel.send(encryptedFirstMessage);
 	
 	String sndMessage;
@@ -226,9 +227,9 @@ public class Data {
 	} else{
 	    if(!"!ok".equals(args[0])){
 		System.out.println("second message does not start with !ok");
+		return;
 	    }
-	    String refChallenge = new String(encodedNumber);
-	    if(!args[1].equals(refChallenge)){
+	    if(!args[1].equals(clientChallenge)){
 		System.out.println("client Challenge wrong");
 	    } 
 	    byte[] secretKey = Base64.decode(args[3]);
@@ -236,19 +237,15 @@ public class Data {
 	    
 	    byte[] ivParam = Base64.decode(args[4]);
 	    AlgorithmParameterSpec paramSpec = new IvParameterSpec(ivParam);
+	    
 	    this.channel = new SecureChannel(channel, key, paramSpec);
+	    
 	    assert args[2].matches("["+B64+"]{43}=") : "3rd message";
-	    String thirdMessage = new String(Base64.decode(args[2]));
-	    assert thirdMessage.matches("["+B64+"]{43}=") : "3rd message";
+	    
+	    String thirdMessage = args[2];
+
 	    channel.send(thirdMessage);
 	}
-	
-	
-	
-	    
-	
-	
-	
     }
     
     

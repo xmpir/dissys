@@ -25,7 +25,7 @@ public class tcpRequest implements Runnable {
 	@Override
 	public void run() {
 		try{
-			t = new tcpRequestCommunication(channel,currentUser);
+			t = new tcpRequestCommunication(channel,currentUser, socket);
 			t.start();
 			t.join();
 			t.interrupt();

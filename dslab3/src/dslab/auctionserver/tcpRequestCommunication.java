@@ -12,6 +12,7 @@ import dslab.analyticsserver.UserEvent;
 import dslab.channels.Channel;
 import dslab.channels.SecureChannel;
 import java.io.UnsupportedEncodingException;
+import java.net.Socket;
 import java.nio.charset.Charset;
 import java.security.InvalidAlgorithmParameterException;
 import java.security.InvalidKeyException;
@@ -34,19 +35,19 @@ import javax.crypto.spec.SecretKeySpec;
 import org.bouncycastle.util.encoders.Base64;
 
 public class tcpRequestCommunication extends Thread {
-
+    private final Socket socket;
     private User currentUser;
     private Channel channel;
     private boolean shakedHands;
 
-    tcpRequestCommunication(Channel channel, User currentUser) {
+    tcpRequestCommunication(Channel channel, User currentUser, Socket socket) {
 	this.currentUser = currentUser;
 	this.channel = channel;
-
+	this.socket=socket;
     }
 
     public void run() {
-	Protocol p = new Protocol(currentUser);
+	Protocol p = new Protocol();
 	String inputLine;
 	String outputWhole = "";
 	while (true) {
@@ -151,7 +152,9 @@ public class tcpRequestCommunication extends Thread {
 	secureRandom.nextBytes(number);
 
 	byte[] serverChallenge = Base64.encode(number);
-
+	String encServerChallenge = new String(serverChallenge);
+	
+	
 	crypt.init(Cipher.ENCRYPT_MODE, this.currentUser.getPublicKey());
 
 
@@ -162,7 +165,7 @@ public class tcpRequestCommunication extends Thread {
 
 	final byte[] iv = new byte[16];
 	secureRandom.nextBytes(iv);
-	String secondmessage = "!ok " + args[3]/*clientChallenge*/ + " " + new String(serverChallenge) + " " + new String(secretKey) + " " + new String(Base64.encode(iv));
+	String secondmessage = "!ok " + args[3]/*clientChallenge*/ + " " + encServerChallenge + " " + new String(secretKey) + " " + new String(Base64.encode(iv));
 	assert secondmessage.matches("!ok ["+B64+"]{43}= ["+B64+"]{43}= ["+B64+"]{43}= ["+B64+"]{22}==") : "2nd message";
 	byte[] scdmsgb64enc = crypt.doFinal(Base64.encode(secondmessage.getBytes()));
 
@@ -175,11 +178,7 @@ public class tcpRequestCommunication extends Thread {
 	while ((thirdMessage = channel.receive()) == null) {
 	    
 	}
-	thirdMessage = new String(Base64.decode(thirdMessage));
-	
-	assert thirdMessage.matches("["+B64+"]{43}=") : "3rd message";
-
-	if(thirdMessage.equals((new String(number)))){
+	if(thirdMessage.equals(encServerChallenge)){
 		System.out.println("Server-Challenge came back right");
 	} else{
 		System.out.println("Server-Challenge came back WRONG");
@@ -191,7 +190,11 @@ public class tcpRequestCommunication extends Thread {
 	    e.printStackTrace();
 	}
 
-	return "!login " + currentUser.getUsername() + System.getProperty("line.separator") + "Successfully logged in as " + currentUser.getUsername() + "!";
+	return "Successfully logged in as " + currentUser.getUsername() + "!";
 	//return "successfully logged in as ";
+    }
+
+    public Socket getSocket() {
+	return this.socket;
     }
 }

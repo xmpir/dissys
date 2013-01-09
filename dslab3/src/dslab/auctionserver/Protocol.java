@@ -8,6 +8,10 @@ import dslab.analyticsserver.AuctionEvent;
 import dslab.analyticsserver.BidEvent;
 import dslab.analyticsserver.EventNotFoundException;
 import dslab.analyticsserver.UserEvent;
+import dslab.channels.Base64Channel;
+import dslab.channels.ChannelDecorator;
+import dslab.channels.TcpChannel;
+import java.io.IOException;
 import java.security.InvalidAlgorithmParameterException;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
@@ -19,10 +23,7 @@ import javax.crypto.NoSuchPaddingException;
 
 public class Protocol {
 
-    private User currentUser;
-
-    Protocol(User currentUser) {
-	this.currentUser = currentUser;
+    public Protocol() {
     }
 
     public String processInput(String inputWhole, tcpRequestCommunication request) throws UnknownParameterException {
@@ -33,9 +34,10 @@ public class Protocol {
 		    return this.list(input);
 		} else {
 		    //check if the user is logged in
-		    if (request.getCurrentUser() != null && request.isShakedHands()) {
-			//go on
+		    if (request.getCurrentUser() != null) {
+			//user is logged in
 		    } else {
+			//shake hands
 			try {
 			    return request.shakeHands(inputWhole);
 
@@ -59,13 +61,13 @@ public class Protocol {
 		    return this.logout(input, request);
 		}
 		if (input[0].equals("!create")) {
-		    return this.create(input);
+		    return this.create(input, request);
 		}
 		if (input[0].equals("!end")) {
-		    return this.end(input);
+		    return this.end(input, request);
 		}
 		if (input[0].equals("!bid")) {
-		    return this.bid(input);
+		    return this.bid(input, request);
 		}
 		return "Command not recognized! Use !login, !logout, !list, !create, !bid or !end!";
 	    }
@@ -76,28 +78,33 @@ public class Protocol {
 
     private String logout(String[] input, tcpRequestCommunication request) {
 	//TODO: kill the secure channel
-	
+
 	if (input.length == 1) {
-	    if (currentUser != null) {
-		currentUser.logout();
-		String username = currentUser.getUsername();
-		currentUser = null;
+	    if (request.getCurrentUser() != null) {
 		try {
-		    AnalyticsServerProtocol.getInstance().processEvent(new UserEvent(UserEvent.logout, new Date().getTime(), username));
-		} catch (EventNotFoundException e) {
-		    // TODO Auto-generated catch block
-		    e.printStackTrace();
+		    request.setChannel(new ChannelDecorator(new Base64Channel(new TcpChannel(request.getSocket()))));
+		    request.getCurrentUser().logout();
+		    String username = request.getCurrentUser().getUsername();
+		    request.setCurrentUser(null);
+		    try {
+			AnalyticsServerProtocol.getInstance().processEvent(new UserEvent(UserEvent.logout, new Date().getTime(), username));
+		    } catch (EventNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		    }
+		    return "!logout" + System.getProperty("line.separator") + "Successfully logged out as " + username + "!";
+		} catch (IOException ex) {
+		    System.out.println("Client Channel reset failed");
 		}
-		return "!logout" + System.getProperty("line.separator") + "Successfully logged out as " + username + "!";
 	    }
 	    return "You have to log in first!";
 	}
 	return "Wrong command: !logout requires no additional argument! Usage: !logout";
     }
 
-    private String create(String[] input) {
+    private String create(String[] input, tcpRequestCommunication request) {
 	if (input.length >= 3) {
-	    if (currentUser != null) {
+	    if (request.getCurrentUser() != null) {
 		long duration;
 		try {
 		    duration = Long.parseLong(input[1]);
@@ -108,7 +115,7 @@ public class Protocol {
 		for (int i = 3; i < input.length; i++) {
 		    description += " " + input[i];
 		}
-		Auction auction = new Auction(description, duration, new Date(), currentUser);
+		Auction auction = new Auction(description, duration, new Date(), request.getCurrentUser());
 		synchronized (Data.getInstance()) {
 		    Data.getInstance().addAuction(auction);
 		    try {
@@ -127,12 +134,12 @@ public class Protocol {
 
     }
 
-    private String end(String[] input) {
+    private String end(String[] input, tcpRequestCommunication request) {
 
 	if (input.length == 1) {
-	    if (currentUser != null) {
-		currentUser.logout();
-		currentUser = null;
+	    if (request.getCurrentUser() != null) {
+		request.getCurrentUser().logout();
+		request.setCurrentUser(null);
 		return "!end";
 	    }
 	    return "!end";
@@ -140,9 +147,9 @@ public class Protocol {
 	return "Wrong command: !end requires no additional argument! Usage: !end";
     }
 
-    private String bid(String[] input) {
+    private String bid(String[] input, tcpRequestCommunication request) {
 	if (input.length == 3) {
-	    if (currentUser != null) {
+	    if (request.getCurrentUser() != null) {
 		int id;
 		try {
 		    id = Integer.parseInt(input[1]);
@@ -161,14 +168,14 @@ public class Protocol {
 		    return "No such id exists! Please check !list again!";
 		}
 		auction = Data.getInstance().getAuction(index);
-		String bidOut = auction.bid(currentUser, amount);
+		String bidOut = auction.bid(request.getCurrentUser(), amount);
 		if (bidOut.equals("You can't bid any more!")) {
 		    return bidOut;
 		}
 		boolean success = Boolean.parseBoolean(bidOut);
 		if (success) {
 		    try {
-			AnalyticsServerProtocol.getInstance().processEvent(new BidEvent(BidEvent.placed, new Date().getTime(), currentUser.getUsername(), id, amount));
+			AnalyticsServerProtocol.getInstance().processEvent(new BidEvent(BidEvent.placed, new Date().getTime(), request.getCurrentUser().getUsername(), id, amount));
 		    } catch (EventNotFoundException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
