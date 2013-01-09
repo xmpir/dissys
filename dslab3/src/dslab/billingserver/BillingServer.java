@@ -135,7 +135,7 @@ public class BillingServer implements BillingServerInterface, Serializable{
     //a little helper for doing the md5-hashing
     private String getMd5(String input){
 	    md.reset();
-	    md.update(input.getBytes(Charset.defaultCharset()));
+	    md.update(input.getBytes());
 	    byte[] digest = md.digest();
 	    BigInteger bigInt = new BigInteger(1,digest);
 	    String hashtext = bigInt.toString(16);

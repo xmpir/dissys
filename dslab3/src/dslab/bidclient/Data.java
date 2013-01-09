@@ -86,7 +86,7 @@ public class Data {
 		PEMReader privIn = null, publIn = null;
 		try {
 			//private key       
-
+			System.out.println(keydirpath+user+".pem");
 			privIn = new PEMReader(new FileReader(keydirpath+user+".pem"), new PasswordFinder() {
 				@Override
 				public char[] getPassword() {
@@ -237,7 +237,7 @@ public class Data {
 
 		secondMessage = crypt.doFinal(secondMessage);
 
-		sndMessage = new String(Base64.decode(secondMessage), Charset.defaultCharset());
+		sndMessage = new String(Base64.decode(secondMessage));
 		assert sndMessage.matches("!ok ["+B64+"]{43}= ["+B64+"]{43}= ["+B64+"]{43}= ["+B64+"]{22}==") : "2nd message";
 
 		String[] args = sndMessage.split(" ");

@@ -70,11 +70,6 @@ public class TcpChannel implements Channel{
     }
 
     @Override
-    public boolean isResetting() {
-	return this.reset;
-    }
-
-    @Override
     public void reset() {
 	this.reset=true;
     }

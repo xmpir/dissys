@@ -5,7 +5,6 @@
 
 package dslab.helper;
 
-import dslab.bidclient.Data;
 import java.io.BufferedReader;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
@@ -57,12 +56,10 @@ public class CryptoTester {
 	try {
 	    publicKeyServer = (PublicKey) publIn.readObject();
 	} catch (IOException ex) {
-	    Logger.getLogger(Data.class.getName()).log(Level.SEVERE, null, ex);
 	}
 	try {
 	    publIn.close();
 	} catch (IOException ex) {
-	    Logger.getLogger(Data.class.getName()).log(Level.SEVERE, null, ex);
 	}
 	
 	PEMReader privIn = null;
@@ -98,22 +95,22 @@ public class CryptoTester {
 	
 	byte[] encodedNumber = Base64.encode(number);
 	
-	String firstMessage = "!login alice 10401 "+(new String(encodedNumber, Charset.defaultCharset()));
+	String firstMessage = "!login alice 10401 "+(new String(encodedNumber));
 	
 	assert firstMessage.matches("!login [a-zA-Z0-9_\\-]+ [0-9]+ ["+"a-zA-Z0-9/+"+"]{43}=") : "1st message";
 	
-	byte[] message = firstMessage.getBytes(Charset.defaultCharset());
+	byte[] message = firstMessage.getBytes();
 	
 	Cipher crypt = Cipher.getInstance("RSA/NONE/OAEPWithSHA256AndMGF1Padding"); 
 	crypt.init(Cipher.ENCRYPT_MODE, publicKeyServer);
 	byte[] encmessage = crypt.doFinal(message);
 	byte[] enc64mes1 = Base64.encode(encmessage);
-	String encryptedFirstMessage1 = new String(enc64mes1, Charset.defaultCharset());
+	String encryptedFirstMessage1 = new String(enc64mes1);
 
 	byte[] enc64mes = Base64.encode(encryptedFirstMessage1.getBytes());
 	System.out.println(enc64mes.length);
 
-	String encryptedFirstMessage = new String(enc64mes, Charset.defaultCharset());
+	String encryptedFirstMessage = new String(enc64mes);
 	
 	System.out.println(encryptedFirstMessage);
 		
@@ -127,7 +124,7 @@ public class CryptoTester {
 	crypt.init(Cipher.DECRYPT_MODE, privateKeyServer);
 	dec64mess = crypt.doFinal(dec64mess);
 	
-	firstMessage = new String(dec64mess, Charset.defaultCharset());
+	firstMessage = new String(dec64mess);
 
 	System.out.println(firstMessage);
 	

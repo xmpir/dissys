@@ -118,7 +118,7 @@ public class tcpRequestCommunication extends Thread {
 	crypt.init(Cipher.DECRYPT_MODE, Data.getInstance().getPrivateKeyServer());
 	firstMessageBytes = crypt.doFinal(firstMessageBytes);
 
-	firstMessage = new String(firstMessageBytes, Charset.defaultCharset());
+	firstMessage = new String(firstMessageBytes);
 	assert firstMessage.matches("!login [a-zA-Z0-9_\\-]+ [0-9]+ ["+B64+"]{43}=") : "1st message";
 
 	String[] args = firstMessage.split(" ");

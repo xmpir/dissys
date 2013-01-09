@@ -41,7 +41,6 @@ public class ClientWriter extends Thread {
 			continue;
 		    } else {
 			Data.getInstance().setUserName(args[1]);
-			System.out.println(args[1]);
 			Data.getInstance().initKeys();
 			try {
 			    Data.getInstance().shakeHands();

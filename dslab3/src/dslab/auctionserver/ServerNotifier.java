@@ -18,7 +18,7 @@ public class ServerNotifier{
 		try {
 			socket = new DatagramSocket();
 			byte[] buf = new byte[256];
-			buf = message.getBytes(Charset.defaultCharset());
+			buf = message.getBytes();
 			DatagramPacket packet = new DatagramPacket(buf, buf.length, address, udpPort);
 			socket.send(packet);
 		} catch (IOException e) {
