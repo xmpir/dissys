@@ -20,6 +20,8 @@ public class ClientResponseHandler extends Thread {
 	@Override
 	public void run() {
 		String fromServer;
+		boolean validHash = false;
+		boolean retry = true;
 		while (Data.getInstance().channel.isOpen()) {
 			fromServer = Data.getInstance().channel.receive();
 			if (fromServer != null) {
@@ -30,7 +32,6 @@ public class ClientResponseHandler extends Thread {
 					continue;
 				}
 				else if (fromServer.substring(1,2).equals(".") || fromServer.substring(0,2).equals("Cu")) {
-					System.out.println("listing");
 					try{
 						Key secretKey = Data.getInstance().getSecretKey();
 						Mac hMac = Mac.getInstance("HmacSHA256");
@@ -39,8 +40,19 @@ public class ClientResponseHandler extends Thread {
 						hMac.update(list.getBytes());
 						byte[] computedHash = hMac.doFinal(); 
 						byte[] receivedHash = Base64.decode(fromServer.substring(fromServer.lastIndexOf(" ")+1));
-						boolean validHash = MessageDigest.isEqual(computedHash,receivedHash);
-						System.out.println(validHash);
+						validHash = MessageDigest.isEqual(computedHash,receivedHash);
+						if (validHash){
+							System.out.println(list);
+							retry = true;
+						}
+						else {
+							if (retry){
+								String lastCommand;
+								lastCommand = Data.getInstance().getLastCommand();
+								Data.getInstance().channel.send(lastCommand);
+								retry = false;
+							}
+						}
 					}
 
 					catch (NoSuchAlgorithmException e) {
@@ -52,8 +64,12 @@ public class ClientResponseHandler extends Thread {
 						e.printStackTrace();
 					}
 
+				} else {
+					System.out.println(fromServer);
+
 				}
-				System.out.println(fromServer);
+
+
 			}
 			try {
 				Thread.sleep(40);
@@ -62,4 +78,6 @@ public class ClientResponseHandler extends Thread {
 			}
 		}
 	}
+
+
 }

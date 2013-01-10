@@ -76,6 +76,7 @@ public class ClientWriter extends Thread {
 		}
 		
 		Data.getInstance().channel.send(fromUser);
+		Data.getInstance().setLastCommand(fromUser);
 		
 		if (fromUser.equals("!end")) {
 		    break;

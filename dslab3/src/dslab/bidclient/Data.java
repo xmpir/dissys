@@ -52,6 +52,7 @@ public class Data {
 	private String clientTcpPort;
 	public Channel channel;
 	private Key key;
+	private String lastCommand;
 	/**
 	 * Default-Konstruktor, der nicht außerhalb dieser Klasse
 	 * aufgerufen werden kann
@@ -205,6 +206,14 @@ public class Data {
 
 	public void setClientTcpPort(String clientTcpPort) {
 		this.clientTcpPort = clientTcpPort;
+	}
+	
+	public void setLastCommand(String lastCommand){
+		this.lastCommand = lastCommand;
+	}
+	
+	public String getLastCommand(){
+		return lastCommand;
 	}
 
 	public void shakeHands() throws NoSuchAlgorithmException, InvalidKeyException, NoSuchPaddingException, IllegalBlockSizeException, BadPaddingException, UnsupportedEncodingException, InvalidAlgorithmParameterException{
