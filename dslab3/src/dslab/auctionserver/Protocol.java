@@ -46,6 +46,8 @@ public class Protocol {
 					return this.end(input, request);
 				} else if (input[0].equals("!bid")) {
 					return this.bid(input, request);
+				} else if (input[0].equals("!groupBid")) {
+					return this.groupBid(input, request);
 				} else if (input[0].equals("!getClientList")) {
 					return this.getClientList(input, request);
 				}else {
@@ -218,4 +220,82 @@ public class Protocol {
 		}
 		return "Wrong command: !getClientsList requires no additional argument! Usage: !list";
 	}
+	
+	private String groupBid(String[] input, tcpRequestCommunication request) {
+		if (input.length == 3) {
+			if (request.getCurrentUser() != null) {
+				int id;
+				try {
+					id = Integer.parseInt(input[1]);
+				} catch (NumberFormatException e) {
+					return "auctionid must be an integer! Please try again!";
+				}
+				double amount;
+				try {
+					amount = Double.parseDouble(input[2]);
+				} catch (NumberFormatException e) {
+					return "amount must be a BigDecimal! Please try again!";
+				}
+				Auction auction = new Auction(id);
+				int index = Data.getInstance().getAuctionIndex(auction);
+				if (index == -1) {
+					return "No such id exists! Please check !list again!";
+				}
+				auction = Data.getInstance().getAuction(index);
+				TentativeBid tentativeBid = new TentativeBid(request.getCurrentUser(), auction, amount);
+				Data.getInstance().addTentativeBid(tentativeBid);
+
+				
+				return "GroupBid with " + amount + " on '" + auction.getDescription() + " is being processed";
+			}
+			return "You have to log in to groupBid on an auction item!";
+		}
+		return "Wrong command: !groupBid requires two additional arguments! Usage: !groupBid <auction-id> <amount>";
+	}
+	
+	private String confirm(String[] input, tcpRequestCommunication request) {
+		if (input.length == 4) {
+			if (request.getCurrentUser() != null) {
+				int id;
+				try {
+					id = Integer.parseInt(input[1]);
+				} catch (NumberFormatException e) {
+					return "auctionid must be an integer! Please try again!";
+				}
+				double amount;
+				try {
+					amount = Double.parseDouble(input[2]);
+				} catch (NumberFormatException e) {
+					return "amount must be a BigDecimal! Please try again!";
+				}
+				
+				User user = new User(input[3]);
+				int indexUser = Data.getInstance().getUserIndex(user);
+				if (indexUser == -1) {
+					return "!rejected - No such user exists!";
+				}
+				user = Data.getInstance().getUser(indexUser);
+				
+				Auction auction = new Auction(id);
+				int auctionIndex = Data.getInstance().getAuctionIndex(auction);
+				if (auctionIndex == -1) {
+					return "!rejected - No such id exists! Please check !list again!";
+				}
+				auction = Data.getInstance().getAuction(auctionIndex);
+				
+				TentativeBid tentativeBid = new TentativeBid(user, auction, amount);
+				int index = Data.getInstance().getTentativeBidIndex(tentativeBid);
+				if (index == -1) {
+					return "!rejected - No such id exists!";
+				}
+				 tentativeBid = Data.getInstance().getTentativeBid(index);
+				 tentativeBid.confirm();
+				
+				return "GroupBid with " + amount + " on '" + auction.getDescription() + " is being processed";
+			}
+			return "You have to log in to confirm an auction item!";
+		}
+		return "Wrong command: !confirm requires three additional arguments! Usage: !confirm <auction-id> <amount> <User>";
+	}
+
 }

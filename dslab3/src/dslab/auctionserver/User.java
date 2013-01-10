@@ -18,138 +18,147 @@ import org.bouncycastle.util.encoders.Hex;
 
 public class User {
 
-    private String username;
-    private boolean active = false;
-    private int udpPort;
-    private InetAddress address;
-    private ArrayList<String> messages = new ArrayList<String>();
-    private PublicKey publicKey = null;
-    private String tcpPort;
-    private Key key = null;
-    private String hostAddress = "";
-    
-    public User(String username) {
-	this.username = username;
-    }
+	private String username;
+	private boolean active = false;
+	private int udpPort;
+	private InetAddress address;
+	private ArrayList<String> messages = new ArrayList<String>();
+	private PublicKey publicKey = null;
+	private String tcpPort;
+	private Key key = null;
+	private String hostAddress = "";
+	private Channel channel = null;
 
-    public synchronized int getUdpPort() {
-	return udpPort;
-    }
-
-    public synchronized void setUdpPort(int udpPort) {
-	this.udpPort = udpPort;
-    }
-
-    public synchronized boolean isActive() {
-	return active;
-    }
-
-    public synchronized void setActive(boolean active) {
-	this.active = active;
-    }
-
-    public synchronized String getUsername() {
-	return username;
-    }
-
-    public synchronized InetAddress getAddress() {
-	return address;
-    }
-
-    public synchronized void setAddress(InetAddress address) {
-	this.address = address;
-    }
-    
-    public synchronized String getHostAddress() {
-    	return hostAddress;
-        }
-
-        public synchronized void setHostAddress(String hostAddress) {
-    	this.hostAddress = hostAddress;
-        }
-
-    public synchronized void logout() {
-	setActive(false);
-    }
-
-    @Override
-    public synchronized boolean equals(Object user) {
-	if (user == null) {
-	    return false;
+	public User(String username) {
+		this.username = username;
 	}
-	if (getClass() != user.getClass()) {
-	    return false;
+
+	public synchronized int getUdpPort() {
+		return udpPort;
 	}
-	return getUsername().equals(((User) user).getUsername());
-    }
 
-    public synchronized int compareTo(User user) {
-	return getUsername().compareTo(((User) user).getUsername());
-
-    }
-
-    @Override
-    public synchronized String toString() {
-	return username;
-    }
-
-    public synchronized void getMessages() {
-	for (String s : messages) {
-	    ServerNotifier sn = new ServerNotifier(getAddress(), getUdpPort());
-	    sn.send(s);
+	public synchronized void setUdpPort(int udpPort) {
+		this.udpPort = udpPort;
 	}
-    }
 
-    public synchronized void addMessage(String message) {
-	messages.add(message);
-    }
+	public synchronized boolean isActive() {
+		return active;
+	}
 
-    void initPublicKey() {
-	if (this.publicKey == null) {
-	    PEMReader publIn = null;
-	    try {
-		publIn = new PEMReader(new FileReader(Data.getInstance().getKeydirpath()+this.username+".pub.pem"));
-	    } catch (FileNotFoundException ex) {
-		System.out.println(": cannot find the public key of " + this.username);
-	    }
-	    try {
-		publicKey = (PublicKey) publIn.readObject();
-	    } catch(ClassCastException es){
-		KeyPair pair = null;
-		try {
-		    pair = (KeyPair) publIn.readObject();
-		} catch (IOException ex) {
-		    Logger.getLogger(User.class.getName()).log(Level.SEVERE, null, ex);
+	public synchronized void setActive(boolean active) {
+		this.active = active;
+	}
+
+	public synchronized Channel getChannel() {
+		return channel;
+	}
+
+	public synchronized void setChannel(Channel channel) {
+		this.channel = channel;
+	}
+
+	public synchronized String getUsername() {
+		return username;
+	}
+
+	public synchronized InetAddress getAddress() {
+		return address;
+	}
+
+	public synchronized void setAddress(InetAddress address) {
+		this.address = address;
+	}
+
+	public synchronized String getHostAddress() {
+		return hostAddress;
+	}
+
+	public synchronized void setHostAddress(String hostAddress) {
+		this.hostAddress = hostAddress;
+	}
+
+	public synchronized void logout() {
+		setActive(false);
+	}
+
+	@Override
+	public synchronized boolean equals(Object user) {
+		if (user == null) {
+			return false;
 		}
-		publicKey= pair.getPublic();
-	    }
-	    catch (IOException ex) {
-		//TODO
-	    }
-	    try {
-		publIn.close();
-	    } catch (IOException ex) {
-		//TODO
-	    }
+		if (getClass() != user.getClass()) {
+			return false;
+		}
+		return getUsername().equals(((User) user).getUsername());
 	}
-    }
 
-    public PublicKey getPublicKey() {
-	return publicKey;
-    }
+	public synchronized int compareTo(User user) {
+		return getUsername().compareTo(((User) user).getUsername());
 
-    public void setPublicKey(PublicKey publicKey) {
-	this.publicKey = publicKey;
-    }
+	}
 
-    public String getTcpPort() {
-	return tcpPort;
-    }
+	@Override
+	public synchronized String toString() {
+		return username;
+	}
 
-    public void setTcpPort(String tcpPort) {
-	this.tcpPort = tcpPort;
-    }
-    
+	public synchronized void getMessages() {
+		for (String s : messages) {
+			ServerNotifier sn = new ServerNotifier(getAddress(), getUdpPort());
+			sn.send(s);
+		}
+	}
+
+	public synchronized void addMessage(String message) {
+		messages.add(message);
+	}
+
+	void initPublicKey() {
+		if (this.publicKey == null) {
+			PEMReader publIn = null;
+			try {
+				publIn = new PEMReader(new FileReader(Data.getInstance().getKeydirpath()+this.username+".pub.pem"));
+			} catch (FileNotFoundException ex) {
+				System.out.println(": cannot find the public key of " + this.username);
+			}
+			try {
+				publicKey = (PublicKey) publIn.readObject();
+			} catch(ClassCastException es){
+				KeyPair pair = null;
+				try {
+					pair = (KeyPair) publIn.readObject();
+				} catch (IOException ex) {
+					Logger.getLogger(User.class.getName()).log(Level.SEVERE, null, ex);
+				}
+				publicKey= pair.getPublic();
+			}
+			catch (IOException ex) {
+				//TODO
+			}
+			try {
+				publIn.close();
+			} catch (IOException ex) {
+				//TODO
+			}
+		}
+	}
+
+	public PublicKey getPublicKey() {
+		return publicKey;
+	}
+
+	public void setPublicKey(PublicKey publicKey) {
+		this.publicKey = publicKey;
+	}
+
+	public String getTcpPort() {
+		return tcpPort;
+	}
+
+	public void setTcpPort(String tcpPort) {
+		this.tcpPort = tcpPort;
+	}
+
 	public void initSecretKey(){
 		byte[] keyBytes = new byte[1024];
 		try{
@@ -167,9 +176,9 @@ public class User {
 			System.out.println("ERROR: IOException reading secret key");
 		}
 	}
-	
+
 	public Key getSecretKey(){
 		return key;
 	}
-    
+
 }

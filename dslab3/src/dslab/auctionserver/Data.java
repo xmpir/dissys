@@ -28,6 +28,7 @@ public class Data {
 
 	private ArrayList<User> user = new ArrayList<User>();
 	private ArrayList<Auction> auctions = new ArrayList<Auction>();
+	private ArrayList<TentativeBid> tentativeBids = new ArrayList<TentativeBid>();
 	private PrivateKey privateKeyServer = null;
 	private PublicKey publicKeyServer = null;
 	private String keydirpath = null;
@@ -204,6 +205,29 @@ public class Data {
 		}
 		this.privateKeyServer = keyPair.getPrivate();
 	}
+
+	synchronized public void addTentativeBid(TentativeBid tentativeBid) {
+		tentativeBids.add(tentativeBid);
+		/*for (User u : user){
+			if (u.isActive()){
+				u.getChannel().send("Please confirm " + tentativeBid.getInitiator().getUsername() + " bidding on " + tentativeBid.getAuction().getId() + ": " + tentativeBid.getAuction().getDescription() + " with " + tentativeBid.getAmount());
+			}
+		}*/
+		
+	}
+	
+	synchronized public int getTentativeBidIndex(TentativeBid t) {
+		return tentativeBids.indexOf(t);
+	}
+
+	synchronized public TentativeBid getTentativeBid(int i) {
+		return tentativeBids.get(i);
+	}
+	
+	/*synchronized public void removeTentativeBid(TentativeBid tentativeBid) {
+		tentativeBids.add(tentativeBid);
+		
+	}*/
 
 
 }
