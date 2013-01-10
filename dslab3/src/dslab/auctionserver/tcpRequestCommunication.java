@@ -172,7 +172,7 @@ public class tcpRequestCommunication extends Thread {
 	secureRandom.nextBytes(iv);
 	String secondmessage = "!ok " + args[3]/*clientChallenge*/ + " " + encServerChallenge + " " + new String(secretKey) + " " + new String(Base64.encode(iv));
 	assert secondmessage.matches("!ok ["+B64+"]{43}= ["+B64+"]{43}= ["+B64+"]{43}= ["+B64+"]{22}==") : "2nd message";
-	byte[] scdmsgb64enc = crypt.doFinal(Base64.encode(secondmessage.getBytes()));
+	byte[] scdmsgb64enc = crypt.doFinal(secondmessage.getBytes());
 
 	scdmsgb64enc = Base64.encode(scdmsgb64enc);
 	this.channel.send(new String(scdmsgb64enc));
@@ -184,6 +184,7 @@ public class tcpRequestCommunication extends Thread {
 	    
 	}
 	if(thirdMessage.equals(encServerChallenge)){
+	    
 		System.out.println("Server-Challenge came back right");
 	} else{
 		System.out.println("Server-Challenge came back WRONG");

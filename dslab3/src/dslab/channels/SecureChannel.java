@@ -65,7 +65,7 @@ public class SecureChannel extends ChannelDecorator {
 	}
 	byte[] decryptedMessage = null;
 	try {
-	    decryptedMessage = crypt.doFinal(message.getBytes());
+	    decryptedMessage = crypt.doFinal(Base64.decode(message.getBytes()));
 	} catch (IllegalBlockSizeException ex) {
 	    Logger.getLogger(SecureChannel.class.getName()).log(Level.SEVERE, null, ex);
 	    return null;
@@ -117,7 +117,7 @@ public class SecureChannel extends ChannelDecorator {
 	    Logger.getLogger(SecureChannel.class
 		    .getName()).log(Level.SEVERE, null, ex);
 	}
-	super.send(new String(encryptedMessage));
+	super.send(new String(Base64.encode(encryptedMessage)));
     }
     
     @Override

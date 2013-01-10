@@ -5,26 +5,24 @@
 
 package dslab.bidclient;
 
-import dslab.billingserver.*;
 import dslab.channels.Channel;
 import dslab.channels.SecureChannel;
 import java.io.BufferedReader;
+import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.UnsupportedEncodingException;
-import java.nio.charset.Charset;
 import java.security.InvalidAlgorithmParameterException;
 import java.security.InvalidKeyException;
+import java.security.Key;
 import java.security.KeyPair;
 import java.security.NoSuchAlgorithmException;
 import java.security.PrivateKey;
 import java.security.PublicKey;
 import java.security.SecureRandom;
 import java.security.spec.AlgorithmParameterSpec;
-import java.security.spec.MGF1ParameterSpec;
-import java.util.ArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.crypto.BadPaddingException;
@@ -33,15 +31,10 @@ import javax.crypto.IllegalBlockSizeException;
 import javax.crypto.NoSuchPaddingException;
 import javax.crypto.SecretKey;
 import javax.crypto.spec.IvParameterSpec;
-import javax.crypto.spec.OAEPParameterSpec;
-import javax.crypto.spec.PSource;
 import javax.crypto.spec.SecretKeySpec;
 import org.bouncycastle.openssl.PEMReader;
 import org.bouncycastle.openssl.PasswordFinder;
 import org.bouncycastle.util.encoders.Base64;
-import java.io.FileInputStream;
-import java.security.Key;
-import javax.crypto.spec.SecretKeySpec;
 import org.bouncycastle.util.encoders.Hex; 
 
 /**
@@ -232,12 +225,12 @@ public class Data {
 		while((sndMessage=channel.receive())==null){
 			//maybe implement some kind of timeout    
 		}
-		byte[] secondMessage = Base64.decode(sndMessage);
+		byte[] secondMessage = Base64.decode(sndMessage.getBytes());
 		crypt.init(Cipher.DECRYPT_MODE, this.privateKeyClient);
 
 		secondMessage = crypt.doFinal(secondMessage);
 
-		sndMessage = new String(Base64.decode(secondMessage));
+		sndMessage = new String(secondMessage);
 		assert sndMessage.matches("!ok ["+B64+"]{43}= ["+B64+"]{43}= ["+B64+"]{43}= ["+B64+"]{22}==") : "2nd message";
 
 		String[] args = sndMessage.split(" ");
@@ -252,7 +245,7 @@ public class Data {
 			if(!args[1].equals(clientChallenge)){
 				System.out.println("client Challenge wrong");
 			} 
-			byte[] secretKey = Base64.decode(args[3]);
+			byte[] secretKey = Base64.decode(args[3].getBytes());
 			SecretKey  key = new SecretKeySpec(secretKey,"AES/CTR/NoPadding" );
 
 			byte[] ivParam = Base64.decode(args[4]);
