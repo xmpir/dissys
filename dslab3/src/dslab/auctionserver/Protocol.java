@@ -31,7 +31,7 @@ public class Protocol {
 
     public String processInput(String inputWhole, tcpRequestCommunication request) throws UnknownParameterException {
 	
-	System.out.println("got: "+inputWhole);
+	//System.out.println("got: "+inputWhole);
 	
 	if (inputWhole != null) {
 	    String[] input = inputWhole.split(" ");
@@ -62,18 +62,13 @@ public class Protocol {
 
 
 			} catch (InvalidAlgorithmParameterException ex) {
-			    Logger.getLogger(Protocol.class.getName()).log(Level.SEVERE, null, ex);
 			} catch (NoSuchAlgorithmException ex) {
-			    Logger.getLogger(Protocol.class.getName()).log(Level.SEVERE, null, ex);
 			} catch (NoSuchPaddingException ex) {
-			    Logger.getLogger(Protocol.class.getName()).log(Level.SEVERE, null, ex);
 			} catch (InvalidKeyException ex) {
-			    Logger.getLogger(Protocol.class.getName()).log(Level.SEVERE, null, ex);
 			} catch (IllegalBlockSizeException ex) {
-			    Logger.getLogger(Protocol.class.getName()).log(Level.SEVERE, null, ex);
 			} catch (BadPaddingException ex) {
-			    Logger.getLogger(Protocol.class.getName()).log(Level.SEVERE, null, ex);
-			}
+			} 
+			return "Error: something went wrong while shaking hands - maybe try again or check your keyfiles";
 		    }
 		}
 		

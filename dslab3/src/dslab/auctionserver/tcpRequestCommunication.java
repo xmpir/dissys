@@ -125,10 +125,10 @@ public class tcpRequestCommunication extends Thread {
 
 	if (args.length != 4) {
 	    System.out.println("length of arguments not 4");
-	    return "Wrong command: !login requires exactly one additional argument! Usage: !login name";
+	    return "Error: Wrong command: !login requires exactly one additional argument! Usage: !login name";
 	} else {
 	    if (!"!login".equals(args[0])) {
-		System.out.println("first message does not start with !login");
+		System.out.println("Error: first message does not start with !login");
 	    }
 	    if (currentUser == null) {
 		currentUser = new User(args[1]);
@@ -139,7 +139,7 @@ public class tcpRequestCommunication extends Thread {
 		    currentUser = Data.getInstance().getUser(index);
 		    if (currentUser.isActive()) {
 			currentUser = null;
-			return "User already logged in!";
+			return "Error: User already logged in!";
 		    }
 		}
 		currentUser.setActive(true);
@@ -147,11 +147,11 @@ public class tcpRequestCommunication extends Thread {
 		currentUser.initPublicKey();
 		currentUser.initSecretKey();
 	    } else {
-	    	return "Already logged in! Log out first!";
+	    	return "Error: Already logged in! Log out first!";
 		//return "!login " + currentUser.getUsername() + System.getProperty("line.separator") + "Already logged in as " + currentUser.getUsername() + "! Please log out before you log in again!";
 	    }
 	}
-
+	
 	SecureRandom secureRandom = new SecureRandom();
 	final byte[] number = new byte[32];
 	secureRandom.nextBytes(number);
@@ -175,6 +175,7 @@ public class tcpRequestCommunication extends Thread {
 	byte[] scdmsgb64enc = crypt.doFinal(secondmessage.getBytes());
 
 	scdmsgb64enc = Base64.encode(scdmsgb64enc);
+	
 	this.channel.send(new String(scdmsgb64enc));
 	
 	AlgorithmParameterSpec paramSpec = new IvParameterSpec(iv);

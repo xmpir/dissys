@@ -225,6 +225,12 @@ public class Data {
 		while((sndMessage=channel.receive())==null){
 			//maybe implement some kind of timeout    
 		}
+		if(sndMessage.startsWith("Error")){
+		    System.out.println(sndMessage);
+		    return;
+		}
+		
+		
 		byte[] secondMessage = Base64.decode(sndMessage.getBytes());
 		crypt.init(Cipher.DECRYPT_MODE, this.privateKeyClient);
 
