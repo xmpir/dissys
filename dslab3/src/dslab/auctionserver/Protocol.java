@@ -21,7 +21,7 @@ import javax.crypto.BadPaddingException;
 import javax.crypto.IllegalBlockSizeException;
 import javax.crypto.NoSuchPaddingException;
 import java.security.Key;
-import javax.crypto.Mac; 
+import javax.crypto.Mac;
 import org.bouncycastle.util.encoders.Base64;
 
 public class Protocol {
@@ -30,28 +30,23 @@ public class Protocol {
     }
 
     public String processInput(String inputWhole, tcpRequestCommunication request) throws UnknownParameterException {
-	
+
 	//System.out.println("got: "+inputWhole);
-	
+
 	if (inputWhole != null) {
 	    String[] input = inputWhole.split(" ");
 	    if (input.length > 0) {
 		if (input[0].equals("!list")) {
 		    return this.list(input, request);
-		} 
-		else if (input[0].equals("!logout")) {
+		} else if (input[0].equals("!logout")) {
 		    return this.logout(input, request);
-		}
-		else if (input[0].equals("!create")) {
+		} else if (input[0].equals("!create")) {
 		    return this.create(input, request);
-		}
-		else if (input[0].equals("!end")) {
+		} else if (input[0].equals("!end")) {
 		    return this.end(input, request);
-		}
-		else if (input[0].equals("!bid")) {
+		} else if (input[0].equals("!bid")) {
 		    return this.bid(input, request);
-		}
-		else {
+		} else {
 		    //check if the user is logged in
 		    if (request.getCurrentUser() != null) {
 			//user is logged in
@@ -67,28 +62,25 @@ public class Protocol {
 			} catch (InvalidKeyException ex) {
 			} catch (IllegalBlockSizeException ex) {
 			} catch (BadPaddingException ex) {
-			} 
+			}
 			return "Error: something went wrong while shaking hands - maybe try again or check your keyfiles";
 		    }
 		}
 		
-		return "Command not recognized! Use !login, !logout, !list, !create, !bid or !end!";
-	    }
-	    return "Empty input!";
-	}
-	return "No input!";
+	    } return "No input!";
+	} return "No input!";
     }
 
     private String logout(String[] input, tcpRequestCommunication request) {
 	if (input.length == 1) {
 	    if (request.getCurrentUser() != null) {
-		String username = request.getCurrentUser().getUsername();		
-		synchronized(request){
-		request.getChannel().send("logging out CODE");
-		request.resetChannel();
-		request.getCurrentUser().logout();
-		request.setCurrentUser(null);
-		System.out.println("user"+username+" logged out");
+		String username = request.getCurrentUser().getUsername();
+		synchronized (request) {
+		    request.getChannel().send("logging out CODE");
+		    request.resetChannel();
+		    request.getCurrentUser().logout();
+		    request.setCurrentUser(null);
+		    System.out.println("user" + username + " logged out");
 		}
 		try {
 		    AnalyticsServerProtocol.getInstance().processEvent(new UserEvent(UserEvent.logout, new Date().getTime(), username));
@@ -193,30 +185,26 @@ public class Protocol {
 
     private String list(String[] input, tcpRequestCommunication request) {
 	if (input.length == 1) {
-		if (request.getCurrentUser() == null) {
-	    return Data.getInstance().listAuctions();
+	    if (request.getCurrentUser() == null) {
+		return Data.getInstance().listAuctions();
+	    } else {
+		try {
+		    String auctions = Data.getInstance().listAuctions();
+		    Key secretKey = request.getCurrentUser().getSecretKey();
+		    Mac hMac = Mac.getInstance("HmacSHA256");
+		    hMac.init(secretKey);
+		    hMac.update(auctions.getBytes());
+		    byte[] hash = hMac.doFinal();
+		    byte[] hashencoded = Base64.encode(hash);
+		    return auctions + " " + new String(hashencoded);
+		} catch (NoSuchAlgorithmException e) {
+		    // TODO Auto-generated catch block
+		    e.printStackTrace();
+		} catch (InvalidKeyException e) {
+		    // TODO Auto-generated catch block
+		    e.printStackTrace();
 		}
-		else {
-			try{
-			String auctions = Data.getInstance().listAuctions();
-			Key secretKey = request.getCurrentUser().getSecretKey();
-					Mac hMac = Mac.getInstance("HmacSHA256");
-					hMac.init(secretKey);
-					hMac.update(auctions.getBytes());
-					byte[] hash = hMac.doFinal();
-					byte[] hashencoded = Base64.encode(hash);
-					System.out.println(auctions + System.getProperty("line.separator") + hashencoded);
-					return auctions + System.getProperty("line.separator") + hashencoded;
-			}
-			catch (NoSuchAlgorithmException e) {
-			    // TODO Auto-generated catch block
-			    e.printStackTrace();
-			}
-			catch (InvalidKeyException e) {
-			    // TODO Auto-generated catch block
-			    e.printStackTrace();
-			}
-		}
+	    }
 	}
 	return "Wrong command: !list requires no additional argument! Usage: !list";
     }
