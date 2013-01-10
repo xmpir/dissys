@@ -150,8 +150,14 @@ public class Data {
 	public void setPrivateKeyClient(PrivateKey privateKeyClient) {
 		this.privateKeyClient = privateKeyClient;
 	}
+	
+	public Key getSecretKey() {
+		return key;
+	}
 
-
+	public void setSecretKey(Key key) {
+		this.key = key;
+	}
 
 	public PublicKey getPublicKeyServer() {
 		return publicKeyServer;
