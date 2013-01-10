@@ -59,6 +59,7 @@ public class ClientWriter extends Thread {
 			} catch (BadPaddingException ex) {
 			    Logger.getLogger(ClientWriter.class.getName()).log(Level.SEVERE, null, ex);
 			}
+			Data.getInstance().channel.send("!getClientList");
 			continue;
 		    }
 		}

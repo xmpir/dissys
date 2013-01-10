@@ -216,6 +216,6 @@ public class Protocol {
 			return Data.getInstance().getClientList();
 
 		}
-		return "Wrong command: !getClientList requires no additional argument! Usage: !list";
+		return "Wrong command: !getClientsList requires no additional argument! Usage: !list";
 	}
 }

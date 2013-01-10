@@ -143,7 +143,7 @@ public class Data {
 	}
 	
 	synchronized public String getClientList(){
-		String out = "";
+		String out = "Active clients: " + System.getProperty("line.separator");
 		for (User u : user){
 			out += u.getHostAddress() + ":" + u.getTcpPort() + " - " + u.getUsername() + System.getProperty("line.separator");
 		}
