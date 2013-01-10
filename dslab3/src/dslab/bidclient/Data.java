@@ -14,6 +14,7 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.UnsupportedEncodingException;
+import java.net.Socket;
 import java.security.InvalidAlgorithmParameterException;
 import java.security.InvalidKeyException;
 import java.security.Key;
@@ -53,6 +54,8 @@ public class Data {
 	public Channel channel;
 	private Key key;
 	private String lastCommand;
+	private boolean listening = true;
+	private Socket socket = null;
 	/**
 	 * Default-Konstruktor, der nicht außerhalb dieser Klasse
 	 * aufgerufen werden kann
@@ -141,8 +144,22 @@ public class Data {
 		}
 
 	}
+	
+	public Socket getSocket() {
+		return socket;
+	}
+	
+	public void setSocket(Socket socket) {
+		this.socket = socket;
+	}
 
+	public boolean getListening() {
+		return listening;
+	}
 
+	public void setListening(boolean listening) {
+		this.listening = listening;
+	}
 
 	public PrivateKey getPrivateKeyClient() {
 		return privateKeyClient;

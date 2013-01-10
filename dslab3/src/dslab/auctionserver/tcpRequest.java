@@ -40,6 +40,8 @@ public class tcpRequest implements Runnable {
 		}
 	}
 	public void interrupt(){
+		t.interrupt();
+		System.out.println("Exiting tcpRequest");
 		channel.close();
 		
 	}

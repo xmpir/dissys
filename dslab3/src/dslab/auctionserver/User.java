@@ -26,6 +26,7 @@ public class User {
     private PublicKey publicKey = null;
     private String tcpPort;
     private Key key = null;
+    private String hostAddress = "";
     
     public User(String username) {
 	this.username = username;
@@ -58,6 +59,14 @@ public class User {
     public synchronized void setAddress(InetAddress address) {
 	this.address = address;
     }
+    
+    public synchronized String getHostAddress() {
+    	return hostAddress;
+        }
+
+        public synchronized void setHostAddress(String hostAddress) {
+    	this.hostAddress = hostAddress;
+        }
 
     public synchronized void logout() {
 	setActive(false);

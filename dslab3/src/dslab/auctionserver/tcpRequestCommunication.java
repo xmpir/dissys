@@ -47,6 +47,7 @@ public class tcpRequestCommunication extends Thread {
 	this.currentUser = currentUser;
 	this.channel = channel;
 	this.socket=socket;
+	 
     }
 
     public void run() {
@@ -146,6 +147,7 @@ public class tcpRequestCommunication extends Thread {
 		currentUser.setTcpPort(args[2]);
 		currentUser.initPublicKey();
 		currentUser.initSecretKey();
+		currentUser.setHostAddress(socket.getInetAddress().getHostAddress());
 	    } else {
 	    	return "Error: Already logged in! Log out first!";
 		//return "!login " + currentUser.getUsername() + System.getProperty("line.separator") + "Already logged in as " + currentUser.getUsername() + "! Please log out before you log in again!";

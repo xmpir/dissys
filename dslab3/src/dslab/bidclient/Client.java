@@ -46,6 +46,7 @@ public class Client {
 		
 		try {
 		    socket = new Socket(host, tcpPortHo);
+		    Data.getInstance().setSocket(socket);
 		    Data.getInstance().channel = new ChannelDecorator(new Base64Channel(new TcpChannel(socket)));
 		    
 		    ClientWriter clwr = new ClientWriter();
@@ -73,6 +74,7 @@ public class Client {
 	} catch (IOException ex) {
 	    Logger.getLogger(Client.class.getName()).log(Level.SEVERE, null, ex);
 	}
+	Data.getInstance().setListening(false);
 	Data.getInstance().channel.close();
     }
     

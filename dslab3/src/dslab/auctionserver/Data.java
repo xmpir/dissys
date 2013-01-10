@@ -139,6 +139,15 @@ public class Data {
 		for (User u : user) {
 			u.logout();
 		}
+		System.out.println("Logout");
+	}
+	
+	synchronized public String getClientList(){
+		String out = "";
+		for (User u : user){
+			out += u.getHostAddress() + ":" + u.getTcpPort() + " - " + u.getUsername() + System.getProperty("line.separator");
+		}
+		return out;
 	}
 
 	synchronized public void updateAuctions() {
