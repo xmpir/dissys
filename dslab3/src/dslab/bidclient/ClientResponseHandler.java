@@ -27,11 +27,12 @@ public class ClientResponseHandler extends Thread {
 			if (fromServer != null) {
 				if (fromServer.equals("logging out CODE")) {
 					System.out.println("logoutCode received");
+					Data.getInstance().setUserName("");
 					Data.getInstance().channel.reset();
 					System.out.println("Channel Reset");
 					continue;
 				}
-				else if (fromServer.substring(1,2).equals(".") || fromServer.substring(0,2).equals("Cu")) {
+				else if ((fromServer.substring(1,2).equals(".") || fromServer.substring(0,2).equals("Cu")) && Data.getInstance().getUserName() != "") {
 					try{
 						Key secretKey = Data.getInstance().getSecretKey();
 						Mac hMac = Mac.getInstance("HmacSHA256");

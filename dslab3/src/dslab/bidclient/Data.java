@@ -48,7 +48,7 @@ public class Data {
 	private PublicKey publicKeyServer = null;
 	private String keydirpath = null;
 	private String pathToServerKey = null;
-	private String user = "alice";
+	private String user = "";
 	private String clientTcpPort;
 	public Channel channel;
 	private Key key;
